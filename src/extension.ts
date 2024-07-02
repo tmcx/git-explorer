@@ -1,10 +1,18 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {}
+import { ExtensionConfigurator } from './config/extension-configurator';
+import { TDP_CONTENT } from './tree-data-providers/content';
+import { CMD_REFRESH_CONTENT } from './commands/refresh-content';
+import { CMD_GO_TO } from './commands/go-to';
+import { CMD_GIT_CLONE } from './commands/git-clone';
 
-// This method is called when your extension is deactivated
+export function activate(context: vscode.ExtensionContext) {
+  const extConf = new ExtensionConfigurator(context);
+
+  extConf.registerTreeDataProvider(TDP_CONTENT.id, TDP_CONTENT.tdp);
+  extConf.registerCommand(CMD_REFRESH_CONTENT.id, CMD_REFRESH_CONTENT.callback);
+  extConf.registerCommand(CMD_GIT_CLONE.id, CMD_GIT_CLONE.callback);
+  extConf.registerCommand(CMD_GO_TO.id, CMD_GO_TO.callback);
+}
+
 export function deactivate() {}
