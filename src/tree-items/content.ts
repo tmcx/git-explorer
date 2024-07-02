@@ -98,6 +98,7 @@ export class ContentTreeItem extends TreeItem {
       '..',
       '..',
       'media',
+      'icons',
       `${this.contextValue}.svg`
     );
   }

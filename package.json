@@ -17,7 +17,7 @@
         {
           "id": "main-view",
           "title": "Git Explorer",
-          "icon": "media/dark-icon.svg"
+          "icon": "media/icons/dark-icon.svg"
         }
       ]
     },
@@ -33,17 +33,17 @@
       {
         "title": "Refresh",
         "command": "cmd-refresh-content",
-        "icon": "media/refresh.svg"
+        "icon": "media/icons/refresh.svg"
       },
       {
         "title": "Clone",
         "command": "cmd-git-clone",
-        "icon": "media/clone.svg"
+        "icon": "media/icons/clone.svg"
       },
       {
         "title": "Go To Page",
         "command": "cmd-go-to",
-        "icon": "media/go-to.svg"
+        "icon": "media/icons/go-to.svg"
       }
     ],
     "menus": {
