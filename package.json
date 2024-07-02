@@ -11,7 +11,63 @@
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
-  "contributes": {},
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "main-view",
+          "title": "Git Explorer",
+          "icon": "media/dark-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "main-view": [
+        {
+          "id": "tdp-content",
+          "name": "Content"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "title": "Refresh",
+        "command": "cmd-refresh-content",
+        "icon": "media/refresh.svg"
+      },
+      {
+        "title": "Clone",
+        "command": "cmd-git-clone",
+        "icon": "media/clone.svg"
+      },
+      {
+        "title": "Go To Page",
+        "command": "cmd-go-to",
+        "icon": "media/go-to.svg"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "cmd-refresh-content",
+          "when": "view == tdp-content",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "cmd-git-clone",
+          "when": "view == tdp-content && viewItem == repository",
+          "group": "inline"
+        },
+        {
+          "command": "cmd-go-to",
+          "when": "view == tdp-content",
+          "group": "inline"
+        }
+      ]
+    }
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
