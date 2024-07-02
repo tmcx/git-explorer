@@ -2,22 +2,13 @@ import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { GitlabService } from '../service/gitlab';
 import { join } from 'path';
 import {
+  ContextValue,
+  EServer,
   IGroup,
   IStructuredGroups,
 } from '../interfaces/extension-configurator';
-
-enum ContextValue {
-  GROUP = 'group',
-  REPOSITORY = 'repository',
-}
-
-function orderByName(arr: ContentTreeItem[]) {
-  arr.sort((a, b) =>
-    String(a.label).localeCompare(String(b.label), undefined, {
-      sensitivity: 'base',
-    })
-  );
-}
+import { globalState } from '../extension';
+import { orderByName } from '../utils/string';
 
 export class ContentItems {
   gitlabService: GitlabService;
@@ -27,8 +18,26 @@ export class ContentItems {
   }
 
   async get(): Promise<ContentTreeItem[]> {
-    const projects = await this.gitlabService.getNested();
-    return this.convertToTreeStructure(projects);
+    const elements: ContentTreeItem[] = [];
+    const tokens = globalState.getTokens();
+    for (const key in tokens) {
+      const { token, server, alias } = tokens[key];
+      switch (server) {
+        case EServer.GITLAB:
+          const projects = await this.gitlabService.getNested(token);
+          const children = this.convertToTreeStructure(projects);
+
+          const serverCTI = new ContentTreeItem(`${alias}(${server})`);
+          serverCTI.setContext(ContextValue.GROUP);
+          serverCTI.setChildren(children);
+          elements.push(serverCTI);
+          break;
+
+        default:
+          break;
+      }
+    }
+    return elements;
   }
 
   convertToTreeStructure(
@@ -88,8 +97,9 @@ export class ContentTreeItem extends TreeItem {
     ssh: string;
   };
 
-  constructor(label: string) {
+  constructor(label: string, description?: string) {
     super(label);
+    this.description = description;
   }
 
   private setIcon() {

@@ -1,6 +1,7 @@
 import { Event, EventEmitter, TreeDataProvider, TreeItem } from 'vscode';
 import { ITreeDataProvider } from '../interfaces/extension-configurator';
 import { ContentItems, ContentTreeItem } from '../tree-items/content';
+import { globalState } from '../extension';
 
 export class ContentTreeDataProvider implements TreeDataProvider<unknown> {
   private contentTreeItems: ContentTreeItem[];
@@ -19,6 +20,11 @@ export class ContentTreeDataProvider implements TreeDataProvider<unknown> {
   }
 
   refresh(): void {
+    this.contentTreeItems = Object.values(globalState.getTokens()).map(
+      ({ server, alias }) =>
+        new ContentTreeItem(`${alias}(${server})`, 'Loading...')
+    );
+
     new ContentItems().get().then((items) => {
       this.contentTreeItems = items;
       this._onDidChangeTreeData.fire(undefined);

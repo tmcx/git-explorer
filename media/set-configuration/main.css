@@ -1,0 +1,56 @@
+body {
+  flex-direction: column;
+  display: flex;
+  row-gap: 4px;
+}
+
+input,
+select {
+  background: #e6e6e6;
+  line-height: 20px;
+  height: 20px;
+  border: none;
+}
+
+button {
+  background: #478215;
+  font-weight: 500;
+  font-size: 12px;
+  padding: 5px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  align-self: end;
+}
+
+button.delete {
+  background: #a00000;
+  padding: 3px;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+h3 {
+  margin: 0px;
+}
+
+#list-servers {
+  margin-bottom: 1rem;
+}
+
+#list-servers > span {
+  margin-left: 15px;
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  border-bottom: dashed 1px #dddddd52;
+  padding: 2px 0px;
+  align-items: center;
+  line-height: 20px;
+}
+
+#list-servers > span:first-of-type {
+  border-top: dashed 1px #dddddd52;
+}

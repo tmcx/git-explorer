@@ -1,4 +1,3 @@
-import { authToken } from '../config/constant';
 import {
   IGroup,
   IRawGXGitTree,
@@ -6,6 +5,7 @@ import {
 } from '../interfaces/extension-configurator';
 
 const baseUrl = `https://gitlab.com/api/v4`;
+let authToken = '';
 
 export class GitlabService {
   async execGet<T>(url: string) {
@@ -43,7 +43,8 @@ export class GitlabService {
     return groups;
   }
 
-  async getNested(): Promise<IStructuredGroups> {
+  async getNested(token: string): Promise<IStructuredGroups> {
+    authToken = token;
     const groups = await this.getGroups();
     const promises: Promise<IRawGXGitTree>[] = [];
     for (let i = 0; i < groups.length; i++) {

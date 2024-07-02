@@ -53,3 +53,19 @@ export interface IGroup {
 export interface IStructuredGroups {
   [groupId: string]: IGroup;
 }
+
+export enum EServer {
+  GITLAB = 'GitLab',
+}
+
+export interface IServer {
+  server: EServer;
+  alias: string;
+  token: string;
+  id: string;
+}
+
+export enum ContextValue {
+  GROUP = 'group',
+  REPOSITORY = 'repository',
+}

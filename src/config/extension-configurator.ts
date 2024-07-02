@@ -6,7 +6,6 @@ import {
 } from '../interfaces/extension-configurator';
 
 export class ExtensionConfigurator {
-
   constructor(private context: ExtensionContext) {}
 
   registerCommand(id: string, callback: TCallback) {

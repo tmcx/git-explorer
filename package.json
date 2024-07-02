@@ -26,6 +26,11 @@
         {
           "id": "tdp-content",
           "name": "Content"
+        },
+        {
+          "type": "webview",
+          "id": "set-configuration",
+          "name": "Set Configuration"
         }
       ]
     },
