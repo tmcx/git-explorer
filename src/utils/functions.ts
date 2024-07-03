@@ -12,10 +12,18 @@ export const StringUtil = {
   },
 };
 
-export function orderByName(arr: ContentTreeItem[]) {
-  arr.sort((a, b) =>
-    String(a.label).localeCompare(String(b.label), undefined, {
-      sensitivity: 'base',
-    })
-  );
-}
+export const ContentTreeItemUtil = {
+  orderByName: (arr: ContentTreeItem[]) => {
+    arr.sort((a, b) =>
+      String(a.label).localeCompare(String(b.label), undefined, {
+        sensitivity: 'base',
+      })
+    );
+  },
+};
+
+export const ObjectUtil = {
+  clone: <T>(obj: T): T => {
+    return JSON.parse(JSON.stringify(obj));
+  },
+};

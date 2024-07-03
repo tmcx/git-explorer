@@ -49,12 +49,22 @@
         "title": "Go To Page",
         "command": "cmd-go-to",
         "icon": "media/icons/go-to.svg"
+      },
+      {
+        "title": "Search",
+        "command": "cmd-search",
+        "icon": "media/icons/search.svg"
       }
     ],
     "menus": {
       "view/title": [
         {
           "command": "cmd-refresh-content",
+          "when": "view == tdp-content",
+          "group": "navigation"
+        },
+        {
+          "command": "cmd-search",
           "when": "view == tdp-content",
           "group": "navigation"
         }

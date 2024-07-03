@@ -3,7 +3,11 @@ import { GLOBAL_STATE } from './constant';
 import { IServer } from '../interfaces/extension-configurator';
 
 export class GlobalState {
-  constructor(private context: ExtensionContext) {}
+  private tempValues: { [key: string]: string };
+
+  constructor(private context: ExtensionContext) {
+    this.tempValues = {};
+  }
 
   getTokens(): {
     [key: string]: IServer;
@@ -30,5 +34,13 @@ export class GlobalState {
       GLOBAL_STATE.KEY.TOKENS,
       JSON.stringify(tokens)
     );
+  }
+
+  getTemp(key: string): string {
+    return this.tempValues[key];
+  }
+
+  setTemp(key: string, value: string) {
+    this.tempValues[key] = value;
   }
 }

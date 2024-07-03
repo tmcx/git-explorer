@@ -8,7 +8,7 @@ import {
   IStructuredGroups,
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
-import { orderByName } from '../utils/string';
+import { ContentTreeItemUtil } from '../utils/functions';
 
 export class ContentItems {
   gitlabService: GitlabService;
@@ -49,7 +49,7 @@ export class ContentItems {
         for (const key in group.subgroups) {
           children.push(parsedGroupsToContentTreeItems(group.subgroups[key]));
         }
-        orderByName(children);
+        ContentTreeItemUtil.orderByName(children);
       }
       if (group.projects) {
         const pChildren: ContentTreeItem[] = [];
@@ -63,7 +63,7 @@ export class ContentItems {
           });
           pChildren.push(pCTT);
         });
-        orderByName(pChildren);
+        ContentTreeItemUtil.orderByName(pChildren);
         children.push(...pChildren);
       }
 
@@ -84,7 +84,7 @@ export class ContentItems {
       const group = structureGroups[key];
       contentTreeItems.push(parsedGroupsToContentTreeItems(group));
     }
-    orderByName(contentTreeItems);
+    ContentTreeItemUtil.orderByName(contentTreeItems);
     return contentTreeItems;
   }
 }
@@ -117,10 +117,12 @@ export class ContentTreeItem extends TreeItem {
     this.urls = urls;
   }
 
-  setContext(ctxValue: ContextValue) {
+  setContext(ctxValue: ContextValue, expanded: boolean = false) {
     this.collapsibleState =
       ctxValue === ContextValue.GROUP
-        ? TreeItemCollapsibleState.Collapsed
+        ? expanded
+          ? TreeItemCollapsibleState.Expanded
+          : TreeItemCollapsibleState.Collapsed
         : TreeItemCollapsibleState.None;
     this.contextValue = ctxValue;
     this.setIcon();

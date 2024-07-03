@@ -13,7 +13,7 @@ import {
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
 import { TDP } from '../tree-data-providers/content';
-import { StringUtil } from '../utils/string';
+import { StringUtil } from '../utils/functions';
 
 const EVENT = {
   DELETE_SERVER: 'delete-server',

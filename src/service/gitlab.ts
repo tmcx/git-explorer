@@ -9,12 +9,16 @@ let authToken = '';
 
 export class GitlabService {
   async execGet<T>(url: string) {
-    const data = await fetch(url, {
-      headers: {
-        'PRIVATE-TOKEN': authToken,
-      },
-    });
-    return data.json() as T;
+    do {
+      const data = await fetch(url, {
+        headers: {
+          'PRIVATE-TOKEN': authToken,
+        },
+      });
+      if (data.status === 200) {
+        return data.json() as T;
+      }
+    } while (true);
   }
 
   async getProjects(groupId: number): Promise<any[]> {

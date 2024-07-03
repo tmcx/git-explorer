@@ -21,6 +21,9 @@ export function activate(context: vscode.ExtensionContext) {
   const { CMD_GO_TO } = require('./commands/go-to');
   extConf.registerCommand(CMD_GO_TO.id, CMD_GO_TO.callback);
 
+  const { CMD_SEARCH } = require('./commands/search');
+  extConf.registerCommand(CMD_SEARCH.id, CMD_SEARCH.callback);
+
   const {
     WEBVIEW_SET_CONFIGURATION,
   } = require('./web-views/set-configuration');

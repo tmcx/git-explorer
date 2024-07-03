@@ -8,6 +8,10 @@ import {
 export class ExtensionConfigurator {
   constructor(private context: ExtensionContext) {}
 
+  executeCommand(key: string, ...args: any) {
+    commands.executeCommand(key, ...args);
+  }
+
   registerCommand(id: string, callback: TCallback) {
     const cmd = commands.registerCommand(id, callback);
     this.context.subscriptions.push(cmd);

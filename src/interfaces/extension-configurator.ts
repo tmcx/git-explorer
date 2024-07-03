@@ -5,6 +5,7 @@ import {
 } from 'vscode';
 
 interface CustomTreeDataProvider extends TreeDataProvider<unknown> {
+  search(query: string): void;
   refresh(): void;
 }
 
