@@ -114,7 +114,7 @@ export class ContentView implements WebviewViewProvider {
     };
 
     return `
-      <section id="tree-view">${elements
+      <section class="tree-content">${elements
         .map((element) => elsHTML(element, 15))
         .join('')}</section>
     `;
