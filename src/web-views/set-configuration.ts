@@ -12,7 +12,6 @@ import {
   IWebviewViewProvider,
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
-import { TDP } from '../tree-data-providers/content';
 import { StringUtil } from '../utils/functions';
 
 const EVENT = {
@@ -45,7 +44,6 @@ export class SetConfigurationView implements WebviewViewProvider {
       if (event.type === EVENT.DELETE_SERVER) {
         globalState.deleteToken(event.data.id);
       }
-      TDP.refresh();
       await this.loadView();
     });
   }
@@ -57,7 +55,7 @@ export class SetConfigurationView implements WebviewViewProvider {
   }
 
   private async _getHtmlForWebview(webview: Webview) {
-    const nonce = StringUtil.getNonce();
+    const nonce = StringUtil.randomId();
 
     return `
         <!DOCTYPE html>

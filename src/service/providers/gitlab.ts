@@ -2,7 +2,7 @@ import {
   IGroup,
   IRawGXGitTree,
   IStructuredGroups,
-} from '../interfaces/extension-configurator';
+} from '../../interfaces/extension-configurator';
 
 const baseUrl = `https://gitlab.com/api/v4`;
 let authToken = '';

@@ -24,61 +24,14 @@
     "views": {
       "main-view": [
         {
-          "id": "tdp-content",
+          "type": "webview",
+          "id": "content",
           "name": "Content"
         },
         {
           "type": "webview",
           "id": "set-configuration",
           "name": "Set Configuration"
-        }
-      ]
-    },
-    "commands": [
-      {
-        "title": "Refresh",
-        "command": "cmd-refresh-content",
-        "icon": "media/icons/refresh.svg"
-      },
-      {
-        "title": "Clone",
-        "command": "cmd-git-clone",
-        "icon": "media/icons/clone.svg"
-      },
-      {
-        "title": "Go To Page",
-        "command": "cmd-go-to",
-        "icon": "media/icons/go-to.svg"
-      },
-      {
-        "title": "Search",
-        "command": "cmd-search",
-        "icon": "media/icons/search.svg"
-      }
-    ],
-    "menus": {
-      "view/title": [
-        {
-          "command": "cmd-refresh-content",
-          "when": "view == tdp-content",
-          "group": "navigation"
-        },
-        {
-          "command": "cmd-search",
-          "when": "view == tdp-content",
-          "group": "navigation"
-        }
-      ],
-      "view/item/context": [
-        {
-          "command": "cmd-git-clone",
-          "when": "view == tdp-content && viewItem == repository",
-          "group": "inline"
-        },
-        {
-          "command": "cmd-go-to",
-          "when": "view == tdp-content",
-          "group": "inline"
         }
       ]
     }

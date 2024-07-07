@@ -1,0 +1,65 @@
+* {
+  font-family: Segoe WPC, Segoe UI, sans-serif;
+  user-select: none;
+  font-size: 13px;
+}
+
+body {
+  padding: 0;
+}
+
+.title {
+  cursor: pointer;
+  line-height: 20px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  color: #dddddd;
+  border: none;
+  position: relative;
+}
+
+.title:hover {
+  background: #bdbdbd29;
+}
+
+.title > .expand {
+  display: inline-flex;
+  transform: scaleY(1.75);
+  height: 22px;
+}
+
+.title.expanded > .expand {
+  transform: scaleX(1.75) rotate(90deg);
+  margin-left: -4px;
+  margin-right: 4px;
+}
+
+.children {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.children:not(.expanded) {
+  display: none;
+}
+
+.line {
+  position: absolute;
+  background: #404040;
+  height: 100%;
+  width: 1px;
+}
+
+.icon.go-to {
+  float: right;
+  margin-top: 4px;
+}
+
+.icon.git-clone {
+  float: right;
+  margin: 3px 7px;
+  height: 16px;
+  width: 16px;
+}

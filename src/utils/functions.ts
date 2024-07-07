@@ -1,10 +1,11 @@
-import { ContentTreeItem } from '../tree-items/content';
+import { TreeItem } from '../service/tree-structure';
 
 export const StringUtil = {
-  getNonce: () => {
+  randomId: (justLetters?: boolean) => {
     let text = '';
     const possible =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' +
+      (justLetters ? '' : '0123456789');
     for (let i = 0; i < 32; i++) {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
@@ -12,8 +13,8 @@ export const StringUtil = {
   },
 };
 
-export const ContentTreeItemUtil = {
-  orderByName: (arr: ContentTreeItem[]) => {
+export const TreeItemUtil = {
+  orderByName: (arr: TreeItem[]) => {
     arr.sort((a, b) =>
       String(a.label).localeCompare(String(b.label), undefined, {
         sensitivity: 'base',
@@ -21,7 +22,6 @@ export const ContentTreeItemUtil = {
     );
   },
 };
-
 export const ObjectUtil = {
   clone: <T>(obj: T): T => {
     return JSON.parse(JSON.stringify(obj));

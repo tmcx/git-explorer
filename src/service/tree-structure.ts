@@ -1,5 +1,3 @@
-import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { GitlabService } from '../service/gitlab';
 import { join } from 'path';
 import {
   ContextValue,
@@ -8,17 +6,18 @@ import {
   IStructuredGroups,
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
-import { ContentTreeItemUtil } from '../utils/functions';
+import { TreeItemUtil } from '../utils/functions';
+import { GitlabService } from './providers/gitlab';
 
-export class ContentItems {
+export class TreeStructure {
   gitlabService: GitlabService;
 
   constructor() {
     this.gitlabService = new GitlabService();
   }
 
-  async get(): Promise<ContentTreeItem[]> {
-    const elements: ContentTreeItem[] = [];
+  async get(): Promise<TreeItem[]> {
+    const elements: TreeItem[] = [];
     const tokens = globalState.getTokens();
     for (const key in tokens) {
       const { token, server, alias } = tokens[key];
@@ -27,7 +26,7 @@ export class ContentItems {
           const projects = await this.gitlabService.getNested(token);
           const children = this.convertToTreeStructure(projects);
 
-          const serverCTI = new ContentTreeItem(`${alias}(${server})`);
+          const serverCTI = new TreeItem(`${alias}(${server})`);
           serverCTI.setContext(ContextValue.GROUP);
           serverCTI.setChildren(children);
           elements.push(serverCTI);
@@ -40,21 +39,19 @@ export class ContentItems {
     return elements;
   }
 
-  convertToTreeStructure(
-    structureGroups: IStructuredGroups
-  ): ContentTreeItem[] {
-    const parsedGroupsToContentTreeItems = (group: IGroup): ContentTreeItem => {
-      const children: ContentTreeItem[] = [];
+  convertToTreeStructure(structureGroups: IStructuredGroups): TreeItem[] {
+    const parsedGroupsToContentTreeItems = (group: IGroup): TreeItem => {
+      const children: TreeItem[] = [];
       if (group.subgroups) {
         for (const key in group.subgroups) {
           children.push(parsedGroupsToContentTreeItems(group.subgroups[key]));
         }
-        ContentTreeItemUtil.orderByName(children);
+        TreeItemUtil.orderByName(children);
       }
       if (group.projects) {
-        const pChildren: ContentTreeItem[] = [];
+        const pChildren: TreeItem[] = [];
         group.projects.forEach((project) => {
-          const pCTT = new ContentTreeItem(project.name);
+          const pCTT = new TreeItem(project.name);
           pCTT.setContext(ContextValue.REPOSITORY);
           pCTT.setUrls({
             webUrl: group.group.web_url,
@@ -63,11 +60,11 @@ export class ContentItems {
           });
           pChildren.push(pCTT);
         });
-        ContentTreeItemUtil.orderByName(pChildren);
+        TreeItemUtil.orderByName(pChildren);
         children.push(...pChildren);
       }
 
-      const ctt = new ContentTreeItem(group.group.name);
+      const ctt = new TreeItem(group.group.name);
       ctt.setContext(ContextValue.GROUP);
       ctt.setChildren(children);
       ctt.setUrls({
@@ -79,27 +76,38 @@ export class ContentItems {
       return ctt;
     };
 
-    const contentTreeItems: ContentTreeItem[] = [];
+    const contentTreeItems: TreeItem[] = [];
     for (const key in structureGroups) {
       const group = structureGroups[key];
       contentTreeItems.push(parsedGroupsToContentTreeItems(group));
     }
-    ContentTreeItemUtil.orderByName(contentTreeItems);
+    TreeItemUtil.orderByName(contentTreeItems);
     return contentTreeItems;
   }
 }
 
-export class ContentTreeItem extends TreeItem {
-  children: ContentTreeItem[] = [];
+export class TreeItem {
+  contextValue: string;
+  description: string;
+  iconPath: string;
+  label: string;
+  children: TreeItem[] = [];
   urls?: {
     webUrl: string;
     http: string;
     ssh: string;
   };
 
-  constructor(label: string, description?: string) {
-    super(label);
-    this.description = description;
+  constructor(
+    label?: string,
+    description?: string,
+    iconPath?: string,
+    contextValue?: string
+  ) {
+    this.contextValue = contextValue || '';
+    this.description = description || '';
+    this.iconPath = iconPath || '';
+    this.label = label || '';
   }
 
   private setIcon() {
@@ -118,17 +126,11 @@ export class ContentTreeItem extends TreeItem {
   }
 
   setContext(ctxValue: ContextValue, expanded: boolean = false) {
-    this.collapsibleState =
-      ctxValue === ContextValue.GROUP
-        ? expanded
-          ? TreeItemCollapsibleState.Expanded
-          : TreeItemCollapsibleState.Collapsed
-        : TreeItemCollapsibleState.None;
     this.contextValue = ctxValue;
     this.setIcon();
   }
 
-  setChildren(children: ContentTreeItem[]) {
+  setChildren(children: TreeItem[]) {
     this.children = children;
   }
 }
