@@ -15,6 +15,7 @@ import {
 import { globalState } from '../extension';
 import { StringUtil } from '../utils/functions';
 import { LANG } from '../config/constant';
+import { WEBVIEW_CONTENT } from './content';
 
 const TEXT = LANG[env.language].WVP.SET_CONFIGURATION;
 
@@ -49,6 +50,7 @@ export class SetConfigurationView implements WebviewViewProvider {
         globalState.deleteToken(event.data.id);
       }
       await this.loadView();
+      WEBVIEW_CONTENT.instance?.loadView();
     });
   }
 

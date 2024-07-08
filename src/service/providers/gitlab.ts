@@ -3,31 +3,19 @@ import {
   IRawGXGitTree,
   IStructuredGroups,
 } from '../../interfaces/extension-configurator';
+import { execGet } from '../../utils/functions';
 
 const baseUrl = `https://gitlab.com/api/v4`;
 let authToken = '';
 
 export class GitlabService {
-  async execGet<T>(url: string) {
-    do {
-      const data = await fetch(url, {
-        headers: {
-          'PRIVATE-TOKEN': authToken,
-        },
-      });
-      if (data.status === 200) {
-        return data.json() as T;
-      }
-    } while (true);
-  }
-
   async getProjects(groupId: number): Promise<any[]> {
     const projects: any[] = [];
     let res: any[] = [];
     let i = 1;
     do {
       const url = `${baseUrl}/groups/${groupId}/projects?per_page=100&page=${i}`;
-      res = await this.execGet<any[]>(url);
+      res = await execGet<any[]>(url, authToken);
       projects.push(...res);
       i++;
     } while (res.length > 0);
@@ -40,7 +28,7 @@ export class GitlabService {
     let i = 1;
     do {
       const url = `${baseUrl}/groups?per_page=100&page=${i}`;
-      res = await this.execGet<any[]>(url);
+      res = await execGet<any[]>(url, authToken);
       groups.push(...res);
       i++;
     } while (res.length > 0);
@@ -58,8 +46,9 @@ export class GitlabService {
           const projects = await this.getProjects(group.id);
           return {
             projects: projects.map((project) => ({
-              http_url_to_repo: project.http_url_to_repo,
-              ssh_url_to_repo: project.ssh_url_to_repo,
+              clone_http: project.http_url_to_repo,
+              clone_ssh: project.ssh_url_to_repo,
+              web_url: project.web_url,
               name: project.name,
               id: project.id,
             })),

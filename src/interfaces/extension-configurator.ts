@@ -35,8 +35,9 @@ export interface IRawGXGitTree {
     id: number;
   };
   projects: {
-    http_url_to_repo: string;
-    ssh_url_to_repo: string;
+    clone_http: string;
+    clone_ssh: string;
+    web_url: string;
     name: string;
     id: number;
   }[];
@@ -57,6 +58,7 @@ export interface IStructuredGroups {
 
 export enum EServer {
   GITLAB = 'GitLab',
+  GITHUB = 'GitHub',
 }
 
 export interface IServer {

@@ -28,3 +28,16 @@ export const ObjectUtil = {
     return JSON.parse(JSON.stringify(obj));
   },
 };
+
+export async function execGet<T>(url: string, authToken: string) {
+  do {
+    const data = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    if (data.status === 200) {
+      return data.json() as T;
+    }
+  } while (true);
+}

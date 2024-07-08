@@ -8,25 +8,41 @@ import {
 import { globalState } from '../extension';
 import { TreeItemUtil } from '../utils/functions';
 import { GitlabService } from './providers/gitlab';
+import { GithubService } from './providers/github';
 
 export class TreeStructure {
   gitlabService: GitlabService;
+  githubService: GithubService;
 
   constructor() {
     this.gitlabService = new GitlabService();
+    this.githubService = new GithubService();
   }
 
   async get(): Promise<TreeItem[]> {
     const elements: TreeItem[] = [];
+    let projects: IStructuredGroups;
+    let children: TreeItem[];
+
     const tokens = globalState.getTokens();
     for (const key in tokens) {
+      let serverCTI: TreeItem;
       const { token, server, alias } = tokens[key];
       switch (server) {
         case EServer.GITLAB:
-          const projects = await this.gitlabService.getNested(token);
-          const children = this.convertToTreeStructure(projects);
+          projects = await this.gitlabService.getNested(token);
+          children = this.convertToTreeStructure(projects);
 
-          const serverCTI = new TreeItem(`${alias}(${server})`);
+          serverCTI = new TreeItem(`${alias}(${server})`);
+          serverCTI.setContext(ContextValue.GROUP);
+          serverCTI.setChildren(children);
+          elements.push(serverCTI);
+          break;
+        case EServer.GITHUB:
+          projects = await this.githubService.getNested(token);
+          children = this.convertToTreeStructure(projects);
+
+          serverCTI = new TreeItem(`${alias}(${server})`);
           serverCTI.setContext(ContextValue.GROUP);
           serverCTI.setChildren(children);
           elements.push(serverCTI);
@@ -54,9 +70,9 @@ export class TreeStructure {
           const pCTT = new TreeItem(project.name);
           pCTT.setContext(ContextValue.REPOSITORY);
           pCTT.setUrls({
-            webUrl: group.group.web_url,
-            http: project.http_url_to_repo,
-            ssh: project.ssh_url_to_repo,
+            webUrl: project.web_url,
+            http: project.clone_http,
+            ssh: project.clone_ssh,
           });
           pChildren.push(pCTT);
         });

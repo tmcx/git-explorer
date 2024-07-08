@@ -91,7 +91,11 @@ export class ContentView implements WebviewViewProvider {
 
   private async _getHtmlForTreeContent() {
     const elements = await this.treeStructure.get();
-    const elsHTML = (element: TreeItem, spaces: number) => {
+    const elsHTML = (
+      element: TreeItem,
+      spaces: number,
+      isProviderLevel?: boolean
+    ) => {
       const id = StringUtil.randomId(true);
       const iconCollapsed =
         element.children.length > 0 ? '<span class="expand">></span>' : '';
@@ -109,13 +113,17 @@ export class ContentView implements WebviewViewProvider {
             ></span>`
           : '';
 
+      const goToIcon = isProviderLevel
+        ? ''
+        : `<span class="icon go-to" data-url="${element.urls?.webUrl}" title="${TEXT.GO_TO}"></span>`;
+
       let text = `
         <button class="title ${type}" data-id="${id}" style="padding-left: ${spaces}px">
           ${iconCollapsed}
           <span class="icon ${type}"></span>
           <span class="name" title="${element.label}">${element.label}</span>
           ${gitCloneIcon}
-          <span class="icon go-to" data-url="${element.urls?.webUrl}" title="${TEXT.GO_TO}"></span>
+          ${goToIcon}
         </button>
       `;
 
@@ -123,7 +131,7 @@ export class ContentView implements WebviewViewProvider {
         text += `
         <section class="children" id="${id}">
           <span class="line" style="margin-left: ${spaces}px;"></span>
-          ${element.children.map((e) => elsHTML(e, spaces + 10)).join('')}
+          ${element.children.map((e) => elsHTML(e, spaces + 15)).join('')}
         </section>`;
       }
 
@@ -132,7 +140,7 @@ export class ContentView implements WebviewViewProvider {
 
     return `
       <section class="tree-content">${elements
-        .map((element) => elsHTML(element, 15))
+        .map((element) => elsHTML(element, 15, true))
         .join('')}</section>
     `;
   }
