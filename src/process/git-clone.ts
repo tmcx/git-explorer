@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 
 const MESSAGE = {
+  NO_PROTOCOL_SELECTED: 'No se seleccionó ningun protocolo de clonación',
   NO_FOLDER_SELECTED: 'No se seleccionó ninguna carpeta de destino',
   SELECT_PROTOCOL: 'Selecciona el protocolo de clonación',
   TARGET_FOLDER: 'Seleccionar Carpeta de Destino',
@@ -18,6 +19,11 @@ export async function gitClone(urls: { http: string; ssh: string }) {
     placeHolder: MESSAGE.SELECT_PROTOCOL,
     canPickMany: false,
   });
+  if (!protocol || protocol.length === 0) {
+    vscode.window.showErrorMessage(MESSAGE.NO_PROTOCOL_SELECTED);
+    return;
+  }
+
 
   const targetFolder = await vscode.window.showOpenDialog({
     openLabel: MESSAGE.TARGET_FOLDER,

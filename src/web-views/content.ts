@@ -67,11 +67,22 @@ export class ContentView implements WebviewViewProvider {
               <html lang="en">
           ${this._getHtmlHead(webview, nonce)}
           <body>
+            ${await this._getHtmlForSearchBox()}
             ${await this._getHtmlForTreeContent()}
             ${await this._getHtmlScript(webview, nonce)}
           </body>
               </html>
       `;
+  }
+
+  private _getHtmlForSearchBox() {
+
+    return `
+      <section class="search-bar">
+      <input type="text" id="search" placeholder="Search" />
+      <span class="icon clear-all"></span>
+      </section>
+    `;
   }
 
   private async _getHtmlForTreeContent() {
@@ -93,12 +104,12 @@ export class ContentView implements WebviewViewProvider {
           : '';
 
       let text = `
-        <button class="title ${type}" data-id="${id}" style="padding: 0px 15px 0px ${spaces}px">
+        <button class="title ${type}" data-id="${id}" style="padding-left: ${spaces}px">
           ${iconCollapsed}
           <span class="icon ${type}"></span>
-           ${element.label}
-          <span class="icon go-to" data-url="${element.urls?.webUrl}"></span>
+          <span class="name">${element.label}</span>
           ${gitCloneIcon}
+          <span class="icon go-to" data-url="${element.urls?.webUrl}"></span>
         </button>
       `;
 

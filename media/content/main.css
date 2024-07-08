@@ -10,14 +10,28 @@ body {
 
 .tree-content {
   .title {
+    padding-right: 15px;
     cursor: pointer;
-    line-height: 20px;
     width: 100%;
     text-align: left;
     background: none;
     color: #dddddd;
     border: none;
     position: relative;
+    display: grid;
+    align-items: center;
+    gap: 3px;
+
+    &.repository {
+      grid-template-columns: 18px 1fr 15px 20px;
+      padding-bottom: 4px;
+      padding-top: 2px;
+    }
+
+    &.group {
+      grid-template-columns: 18px 15px 1fr 20px;
+      padding-bottom: 1px;
+    }
 
     &:hover {
       background: #bdbdbd29;
@@ -25,14 +39,18 @@ body {
 
     & > .expand {
       display: inline-flex;
-      transform: scaleY(1.75);
+      transform: scaleY(1.75) translate(5px, 1px);
       height: 22px;
     }
 
     &.expanded > .expand {
-      transform: scaleX(1.75) rotate(90deg);
-      margin-left: -4px;
-      margin-right: 4px;
+      transform: translate(0px, 5px) scaleX(1.75) rotate(90deg);
+    }
+
+    .name {
+      text-overflow: ellipsis;
+      text-wrap: nowrap;
+      overflow: hidden;
     }
   }
 
@@ -53,15 +71,57 @@ body {
     width: 1px;
   }
 
+  .icon.git-clone,
   .icon.go-to {
     float: right;
-    margin-top: 4px;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   .icon.git-clone {
-    float: right;
-    margin: 3px 7px;
+    margin-left: -3px;
     height: 16px;
     width: 16px;
   }
+}
+
+.search-bar {
+  position: relative;
+  padding: 15px;
+
+  input {
+    width: calc(100% - 39px);
+    background: #3c3c3c;
+    border: none;
+    height: 26px;
+    font-size: 12px;
+    color: #fff;
+    padding: 0 28px 0 10px;
+
+    &:focus {
+      outline: solid 1px #007acc;
+    }
+
+    &:not(:placeholder-shown) ~ span,
+    &:not(:placeholder-shown) ~ span:hover {
+      cursor: pointer;
+      opacity: 1;
+    }
+  }
+
+  span {
+    position: absolute;
+    opacity: 0.7;
+    right: 23px;
+    top: 20px;
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.hidden {
+  display: none !important;
 }
