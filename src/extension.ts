@@ -9,13 +9,8 @@ export function activate(context: vscode.ExtensionContext) {
   globalState = new GlobalState(context);
   const extConf = new ExtensionConfigurator(context);
 
-  const {
-    WEBVIEW_CONTENT,
-  } = require('./web-views/content');
-  extConf.registerWebviewViewProvider(
-    WEBVIEW_CONTENT.id,
-    WEBVIEW_CONTENT.wvp
-  );
+  const { WEBVIEW_CONTENT } = require('./web-views/content');
+  extConf.registerWebviewViewProvider(WEBVIEW_CONTENT.id, WEBVIEW_CONTENT.wvp);
 
   const {
     WEBVIEW_SET_CONFIGURATION,
@@ -24,7 +19,6 @@ export function activate(context: vscode.ExtensionContext) {
     WEBVIEW_SET_CONFIGURATION.id,
     WEBVIEW_SET_CONFIGURATION.wvp
   );
-
 }
 
 export function deactivate() {}

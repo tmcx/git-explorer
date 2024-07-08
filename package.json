@@ -26,12 +26,12 @@
         {
           "type": "webview",
           "id": "content",
-          "name": "Content"
+          "name": ""
         },
         {
           "type": "webview",
           "id": "set-configuration",
-          "name": "Set Configuration"
+          "name": ""
         }
       ]
     }

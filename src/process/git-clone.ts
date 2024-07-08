@@ -1,18 +1,8 @@
 import * as vscode from 'vscode';
+import { PROTOCOL } from '../interfaces/extension-configurator';
+import { LANG } from '../config/constant';
 
-const MESSAGE = {
-  NO_PROTOCOL_SELECTED: 'No se seleccionó ningun protocolo de clonación',
-  NO_FOLDER_SELECTED: 'No se seleccionó ninguna carpeta de destino',
-  SELECT_PROTOCOL: 'Selecciona el protocolo de clonación',
-  TARGET_FOLDER: 'Seleccionar Carpeta de Destino',
-  CLONED: 'Repositorio clonado en: ',
-  ERROR: 'Error: ',
-};
-
-enum PROTOCOL {
-  SSH = 'SSH',
-  HTTP = 'HTTP',
-}
+const MESSAGE = LANG[vscode.env.language].CMD.GIT_CLONE;
 
 export async function gitClone(urls: { http: string; ssh: string }) {
   const protocol = await vscode.window.showQuickPick(Object.values(PROTOCOL), {
@@ -23,7 +13,6 @@ export async function gitClone(urls: { http: string; ssh: string }) {
     vscode.window.showErrorMessage(MESSAGE.NO_PROTOCOL_SELECTED);
     return;
   }
-
 
   const targetFolder = await vscode.window.showOpenDialog({
     openLabel: MESSAGE.TARGET_FOLDER,

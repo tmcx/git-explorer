@@ -70,3 +70,8 @@ export enum ContextValue {
   GROUP = 'group',
   REPOSITORY = 'repository',
 }
+
+export enum PROTOCOL {
+  SSH = 'SSH',
+  HTTP = 'HTTP',
+}

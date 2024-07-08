@@ -6,6 +6,7 @@ import {
   WebviewView,
   Webview,
   Uri,
+  env,
 } from 'vscode';
 import {
   ContextValue,
@@ -15,6 +16,9 @@ import { StringUtil } from '../utils/functions';
 import { TreeItem, TreeStructure } from '../service/tree-structure';
 import { goTo } from '../process/go-to';
 import { gitClone } from '../process/git-clone';
+import { LANG } from '../config/constant';
+
+const TEXT = LANG[env.language].WVP.CONTENT;
 
 const EVENT = {
   GIT_CLONE: 'git-clone',
@@ -54,6 +58,7 @@ export class ContentView implements WebviewViewProvider {
   }
 
   public async loadView() {
+    this.webviewView.title = TEXT.TITLE;
     this.webviewView.webview.html = await this._getHtmlForWebview(
       this.webviewView.webview
     );
@@ -76,11 +81,10 @@ export class ContentView implements WebviewViewProvider {
   }
 
   private _getHtmlForSearchBox() {
-
     return `
       <section class="search-bar">
-      <input type="text" id="search" placeholder="Search" />
-      <span class="icon clear-all"></span>
+      <input type="text" id="search" placeholder="${TEXT.SEARCH}" />
+      <span class="icon clear-all" title="${TEXT.CLEAR_ALL}"></span>
       </section>
     `;
   }
@@ -98,18 +102,20 @@ export class ContentView implements WebviewViewProvider {
       const gitCloneIcon =
         element.contextValue === ContextValue.REPOSITORY
           ? `<span
-            class="icon git-clone"
-            data-http="${element.urls?.http}"
-            data-ssh="${element.urls?.ssh}"></span>`
+              class="icon git-clone"
+              data-http="${element.urls?.http}"
+              data-ssh="${element.urls?.ssh}"
+              title="${TEXT.GIT_CLONE}"
+            ></span>`
           : '';
 
       let text = `
         <button class="title ${type}" data-id="${id}" style="padding-left: ${spaces}px">
           ${iconCollapsed}
           <span class="icon ${type}"></span>
-          <span class="name">${element.label}</span>
+          <span class="name" title="${element.label}">${element.label}</span>
           ${gitCloneIcon}
-          <span class="icon go-to" data-url="${element.urls?.webUrl}"></span>
+          <span class="icon go-to" data-url="${element.urls?.webUrl}" title="${TEXT.GO_TO}"></span>
         </button>
       `;
 

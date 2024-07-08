@@ -22,6 +22,7 @@ export const TreeItemUtil = {
     );
   },
 };
+
 export const ObjectUtil = {
   clone: <T>(obj: T): T => {
     return JSON.parse(JSON.stringify(obj));

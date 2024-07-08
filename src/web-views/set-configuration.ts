@@ -6,6 +6,7 @@ import {
   WebviewView,
   Webview,
   Uri,
+  env,
 } from 'vscode';
 import {
   EServer,
@@ -13,6 +14,9 @@ import {
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
 import { StringUtil } from '../utils/functions';
+import { LANG } from '../config/constant';
+
+const TEXT = LANG[env.language].WVP.SET_CONFIGURATION;
 
 const EVENT = {
   DELETE_SERVER: 'delete-server',
@@ -49,6 +53,7 @@ export class SetConfigurationView implements WebviewViewProvider {
   }
 
   public async loadView() {
+    this.webviewView.title = TEXT.TITLE;
     this.webviewView.webview.html = await this._getHtmlForWebview(
       this.webviewView.webview
     );
@@ -72,35 +77,35 @@ export class SetConfigurationView implements WebviewViewProvider {
 
   private _getHtmlForAddServer() {
     return `
-      <h3>Add server</h3>
+      <h3>${TEXT.ADD_SERVER}</h3>
       <select id="select-server">
-          <option disabled selected value="-99">Select server</option>
+          <option disabled selected value="-99">${TEXT.SELECT_SERVER}</option>
           ${Object.values(EServer)
             .map((server) => `<option value="${server}">${server}</option>`)
             .join('')}
       </select>
-      <input type="text" required placeholder="Alias" id="alias">
-      <input type="text" required placeholder="Token" id="token">
-      <button id="add-server" disabled>Add</button>
+      <input type="text" required placeholder="${TEXT.ALIAS}" id="alias">
+      <input type="text" required placeholder="${TEXT.TOKEN}" id="token">
+      <button id="add-server" disabled>${TEXT.ADD}</button>
     `;
   }
 
   private _getHtmlForListServers() {
     const tokens = Object.values(globalState.getTokens());
     return `
-      <h3>Servers</h3>
+      <h3>${TEXT.CONNECTIONS}</h3>
       <section id="list-servers">
         ${tokens
           .map(
             ({ alias, server, id }) => `
             <span>
-              <span>${alias}(${server})</span>
-              <button class="delete" id="delete-server" data-id="${id}">Delete</button>
+              <span title="${alias}(${server})">${alias}(${server})</span>
+              <button class="delete" id="delete-server" data-id="${id}">${TEXT.DELETE}</button>
             </span>
           `
           )
           .join('')}
-        ${tokens.length === 0 ? '<span>No servers loaded.</span>' : ''}
+        ${tokens.length === 0 ? `<span>${TEXT.NO_SERVERS_LOADED}</span>` : ''}
       </section>
     `;
   }
@@ -118,7 +123,6 @@ export class SetConfigurationView implements WebviewViewProvider {
       <head>
         <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
         <link href="${styleMainUri}" rel="stylesheet">
-        <title>Cat Colors</title>
       </head>
       `;
   }
