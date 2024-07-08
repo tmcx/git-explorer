@@ -62,6 +62,12 @@ body {
     &:not(.expanded) {
       display: none;
     }
+
+    &.empty {
+      span {
+        opacity: 0.7;
+      }
+    }
   }
 
   .line {

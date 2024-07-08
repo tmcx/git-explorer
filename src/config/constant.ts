@@ -20,6 +20,7 @@ export const LANG: {
     };
     WVP: {
       CONTENT: {
+        EMPTY_GROUP: any;
         SEARCH: any;
         CLEAR_ALL: any;
         GIT_CLONE: any;
@@ -54,6 +55,7 @@ export const LANG: {
     WVP: {
       CONTENT: {
         TITLE: 'Connections content',
+        EMPTY_GROUP: 'No repositories found',
         CLEAR_ALL: 'Clear',
         GIT_CLONE: 'Clone',
         GO_TO: 'Go to',
@@ -86,6 +88,7 @@ export const LANG: {
     WVP: {
       CONTENT: {
         TITLE: 'Contenido de conexiones',
+        EMPTY_GROUP: 'No se encontraron repositorios',
         CLEAR_ALL: 'Limpiar',
         GIT_CLONE: 'Clonar',
         GO_TO: 'Ir a',

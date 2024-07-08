@@ -97,11 +97,11 @@ export class ContentView implements WebviewViewProvider {
       isProviderLevel?: boolean
     ) => {
       const id = StringUtil.randomId(true);
-      const iconCollapsed =
-        element.children.length > 0 ? '<span class="expand">></span>' : '';
-
       const type =
         element.contextValue === ContextValue.GROUP ? 'group' : 'repository';
+
+      const iconCollapsed =
+        type === ContextValue.GROUP ? '<span class="expand">></span>' : '';
 
       const gitCloneIcon =
         element.contextValue === ContextValue.REPOSITORY
@@ -132,6 +132,15 @@ export class ContentView implements WebviewViewProvider {
         <section class="children" id="${id}">
           <span class="line" style="margin-left: ${spaces}px;"></span>
           ${element.children.map((e) => elsHTML(e, spaces + 15)).join('')}
+        </section>`;
+      }
+
+      if (type === ContextValue.GROUP && element.children.length === 0) {
+        text += `
+        <section class="children empty" id="${id}">
+          <span style="margin-left: ${
+            spaces + 20
+          }px;">${TEXT.EMPTY_GROUP}</span>
         </section>`;
       }
 
