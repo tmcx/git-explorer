@@ -105,5 +105,12 @@
         titlesWithValue.forEach(title => removeToParentRecursive(title));
     });
 
+    document.querySelector('.header .refresh').addEventListener('click', (event) => {
+        event.stopPropagation();
+        vscode.postMessage({
+            type: 'refresh-all-connection'
+        });
+    });
+
 })();
 

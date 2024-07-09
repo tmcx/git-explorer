@@ -133,3 +133,25 @@ body {
 .hidden {
   display: none !important;
 }
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 2px 15px;
+  padding: 0px 6px 4px 0px;
+  border-bottom: solid 1px var(--vscode-tree-indentGuidesStroke);
+
+  span {
+    opacity: 0.75;
+  }
+}
+
+.icon.refresh {
+  opacity: 0.75;
+
+  &:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+}

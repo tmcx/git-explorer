@@ -20,6 +20,8 @@ export const LANG: {
     };
     WVP: {
       CONTENT: {
+        REFRESH: any;
+        REFRESH_ALL: any;
         EMPTY_GROUP: any;
         SEARCH: any;
         CLEAR_ALL: any;
@@ -60,6 +62,8 @@ export const LANG: {
         GIT_CLONE: 'Clone',
         GO_TO: 'Go to',
         SEARCH: 'Search',
+        REFRESH_ALL: 'Refresh All',
+        REFRESH: 'Refresh',
       },
       SET_CONFIGURATION: {
         TITLE: 'Connections',
@@ -93,6 +97,8 @@ export const LANG: {
         GIT_CLONE: 'Clonar',
         GO_TO: 'Ir a',
         SEARCH: 'Buscar',
+        REFRESH_ALL: 'Refrescar Todos',
+        REFRESH: 'Refrescar',
       },
       SET_CONFIGURATION: {
         TITLE: 'Conexiones',

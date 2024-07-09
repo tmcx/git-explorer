@@ -6,7 +6,7 @@ import {
   IStructuredGroups,
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
-import { TreeItemUtil } from '../utils/functions';
+import { StringUtil, TreeItemUtil } from '../utils/functions';
 import { GitlabService } from './providers/gitlab';
 import { GithubService } from './providers/github';
 
@@ -103,6 +103,7 @@ export class TreeStructure {
 }
 
 export class TreeItem {
+  id: string;
   contextValue: string;
   description: string;
   iconPath: string;
@@ -120,6 +121,7 @@ export class TreeItem {
     iconPath?: string,
     contextValue?: string
   ) {
+    this.id = StringUtil.randomId(true);
     this.contextValue = contextValue || '';
     this.description = description || '';
     this.iconPath = iconPath || '';

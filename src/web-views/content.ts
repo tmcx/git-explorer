@@ -21,6 +21,7 @@ import { LANG } from '../config/constant';
 const TEXT = LANG[env.language].WVP.CONTENT;
 
 const EVENT = {
+  REFRESH_ALL_CONNECTION: 'refresh-all-connection',
   GIT_CLONE: 'git-clone',
   GO_TO: 'go-to',
 };
@@ -53,7 +54,9 @@ export class ContentView implements WebviewViewProvider {
       if (event.type === EVENT.GIT_CLONE) {
         gitClone(event.data.urls);
       }
-      // await this.loadView();
+      if (event.type === EVENT.REFRESH_ALL_CONNECTION) {
+        this.loadView();
+      }
     });
   }
 
@@ -96,7 +99,6 @@ export class ContentView implements WebviewViewProvider {
       spaces: number,
       isProviderLevel?: boolean
     ) => {
-      const id = StringUtil.randomId(true);
       const type =
         element.contextValue === ContextValue.GROUP ? 'group' : 'repository';
 
@@ -118,7 +120,7 @@ export class ContentView implements WebviewViewProvider {
         : `<span class="icon go-to" data-url="${element.urls?.webUrl}" title="${TEXT.GO_TO}"></span>`;
 
       let text = `
-        <button class="title ${type}" data-id="${id}" style="padding-left: ${spaces}px">
+        <button class="title ${type}" data-id="${element.id}" style="padding-left: ${spaces}px">
           ${iconCollapsed}
           <span class="icon ${type}"></span>
           <span class="name" title="${element.label}">${element.label}</span>
@@ -129,7 +131,7 @@ export class ContentView implements WebviewViewProvider {
 
       if (element.children.length > 0) {
         text += `
-        <section class="children" id="${id}">
+        <section class="children" id="${element.id}">
           <span class="line" style="margin-left: ${spaces}px;"></span>
           ${element.children.map((e) => elsHTML(e, spaces + 15)).join('')}
         </section>`;
@@ -137,10 +139,10 @@ export class ContentView implements WebviewViewProvider {
 
       if (type === ContextValue.GROUP && element.children.length === 0) {
         text += `
-        <section class="children empty" id="${id}">
-          <span style="margin-left: ${
-            spaces + 20
-          }px;">${TEXT.EMPTY_GROUP}</span>
+        <section class="children empty" id="${element.id}">
+          <span style="margin-left: ${spaces + 20}px;">${
+          TEXT.EMPTY_GROUP
+        }</span>
         </section>`;
       }
 
@@ -148,6 +150,10 @@ export class ContentView implements WebviewViewProvider {
     };
 
     return `
+      <section class="header">
+          <span>${TEXT.TITLE}</span>
+          <span class="icon refresh" title="${TEXT.REFRESH_ALL}"></span>
+      </section>
       <section class="tree-content">${elements
         .map((element) => elsHTML(element, 15, true))
         .join('')}</section>
