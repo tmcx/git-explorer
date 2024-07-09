@@ -15,7 +15,7 @@ body {
     width: 100%;
     text-align: left;
     background: none;
-    color: #dddddd;
+    color: var(--vscode-foreground);
     border: none;
     position: relative;
     display: grid;
@@ -29,22 +29,23 @@ body {
     }
 
     &.group {
-      grid-template-columns: 18px 15px 1fr 20px;
+      grid-template-columns: 13px 15px 1fr 20px;
       padding-bottom: 1px;
     }
 
     &:hover {
-      background: #bdbdbd29;
+      background: var(--vscode-list-hoverBackground);
     }
 
     & > .expand {
       display: inline-flex;
-      transform: scaleY(1.75) translate(5px, 1px);
+      transform: scaleY(1.75) translate(1px, 1px);
       height: 22px;
     }
 
     &.expanded > .expand {
-      transform: translate(0px, 5px) scaleX(1.75) rotate(90deg);
+      transform: scaleX(1.75) rotate(90deg);
+      margin-right: 5px;
     }
 
     .name {
@@ -72,9 +73,10 @@ body {
 
   .line {
     position: absolute;
-    background: #404040;
+    background: var(--vscode-tree-indentGuidesStroke);
     height: 100%;
     width: 1px;
+    z-index: 1;
   }
 
   .icon.git-clone,
@@ -100,15 +102,15 @@ body {
 
   input {
     width: calc(100% - 39px);
-    background: #3c3c3c;
+    background: var(--vscode-input-background);
     border: none;
     height: 26px;
     font-size: 12px;
-    color: #fff;
+    color: var(--vscode-input-foreground);
     padding: 0 28px 0 10px;
 
     &:focus {
-      outline: solid 1px #007acc;
+      outline: solid 1px var(--vscode-focusBorder);
     }
 
     &:not(:placeholder-shown) ~ span,

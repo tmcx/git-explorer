@@ -1,15 +1,22 @@
 body {
+  padding-top: 1rem;
   flex-direction: column;
   display: flex;
   row-gap: 4px;
 }
 
-input,
-select {
-  background: #e6e6e6;
-  line-height: 20px;
-  height: 20px;
+input {
+  background: var(--vscode-input-background);
   border: none;
+  height: 26px;
+  font-size: 12px;
+  padding: 0 10px;
+  color: var(--vscode-input-foreground);
+  outline: solid 1px var(--vscode-tree-indentGuidesStroke);
+
+  &:focus {
+    outline: solid 1px var(--vscode-focusBorder);
+  }
 }
 
 button {
@@ -21,16 +28,16 @@ button {
   color: #fff;
   cursor: pointer;
   align-self: end;
-}
 
-button.delete {
-  background: #a00000;
-  padding: 3px;
-}
+  &.delete {
+    background: #a00000;
+    padding: 3px;
+  }
 
-button:disabled {
-  cursor: default;
-  opacity: 0.5;
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
 }
 
 h3 {
@@ -39,18 +46,71 @@ h3 {
 
 #list-servers {
   margin-bottom: 1rem;
+
+  & > span {
+    margin-left: 15px;
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    border-bottom: dashed 1px var(--vscode-tree-indentGuidesStroke);
+    padding: 2px 0px;
+    align-items: center;
+    line-height: 20px;
+
+    &:first-of-type {
+      border-top: dashed 1px var(--vscode-tree-indentGuidesStroke);
+    }
+  }
 }
 
-#list-servers > span {
-  margin-left: 15px;
-  display: grid;
-  grid-template-columns: 1fr min-content;
-  border-bottom: dashed 1px #dddddd52;
-  padding: 2px 0px;
-  align-items: center;
-  line-height: 20px;
+.new-server {
+  display: flex;
+  flex-direction: column;
+
+  input {
+    cursor: pointer;
+  }
+
+  .selected,
+  .options span {
+    background: var(--vscode-input-background);
+    border: none;
+    line-height: 26px;
+    height: 26px;
+    font-size: 12px;
+    padding: 0 10px;
+    color: var(--vscode-input-foreground);
+    outline: solid 1px var(--vscode-tree-indentGuidesStroke);
+  }
+
+  .selected {
+    cursor: pointer;
+    position: relative;
+
+    .icon {
+      transform: rotate(90deg) scaleY(1.75) translateX(3px);
+      position: absolute;
+      right: 3px;
+      height: 22px;
+    }
+  }
+
+  .options {
+    display: none;
+    margin-top: 29px;
+    position: absolute;
+    width: calc(100% - 60px);
+
+    span {
+      cursor: pointer;
+      width: 100%;
+      &:hover {
+        background: var(--vscode-button-hoverBackground);
+      }
+    }
+  }
 }
 
-#list-servers > span:first-of-type {
-  border-top: dashed 1px #dddddd52;
+.show {
+  display: flex !important;
+  flex-direction: column;
 }

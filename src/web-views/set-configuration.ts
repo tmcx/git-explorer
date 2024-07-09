@@ -80,14 +80,19 @@ export class SetConfigurationView implements WebviewViewProvider {
   private _getHtmlForAddServer() {
     return `
       <h3>${TEXT.ADD_SERVER}</h3>
-      <select id="select-server">
-          <option disabled selected value="-99">${TEXT.SELECT_SERVER}</option>
-          ${Object.values(EServer)
-            .map((server) => `<option value="${server}">${server}</option>`)
-            .join('')}
-      </select>
+      <section class="new-server">
+          <section class="selected">
+            <span class="text" aria-default="true">${TEXT.SELECT_SERVER}</span>
+            <span class="icon">></span>
+          </section>
+          <section class="options">
+            ${Object.values(EServer)
+              .map((server) => `<span value="${server}">${server}</span>`)
+              .join('')}
+          </section>
+      </section>
       <input type="text" required placeholder="${TEXT.ALIAS}" id="alias">
-      <input type="text" required placeholder="${TEXT.TOKEN}" id="token">
+      <input type="password" required placeholder="${TEXT.TOKEN}" id="token">
       <button id="add-server" disabled>${TEXT.ADD}</button>
     `;
   }
