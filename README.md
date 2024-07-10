@@ -1,9 +1,9 @@
 <h1 align="center">Git Explorer</h1>
 
-Welcome to Git Explorer, a Visual Studio Code extension designed to navigate and manage your Git repositories efficiently, providing an intuitive user interface and advanced functionalities.
+Git Explorer, a Visual Studio Code extension designed to navigate and manage your Git repositories efficiently, providing an intuitive user interface and advanced functionalities.
 
 <p align="center">
-    <img src="https://github.com/tmcx/git-explorer/raw/main/media/demo.gif" width="400" height="400"/>
+    <img src="https://github.com/tmcx/git-explorer/blob/701fef8dd3c0fe54f141e4d3840ead15a5c8b093/media/demo.gif?raw=true" width="400" height="400"/>
 </p>
 
 ## Features

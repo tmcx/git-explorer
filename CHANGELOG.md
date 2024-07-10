@@ -1,9 +1,22 @@
-# Change Log
+## Changelog
 
-All notable changes to the "git-explorer" extension will be documented in this file.
+### 1.0.0
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+- Validate token previous save
+- Refresh connections
 
-## [Unreleased]
+### 0.3.0
 
-- Initial release
+- English and spanish support
+- Search folder/group
+- Github provider
+- Gitlab provider
+
+### 0.2.0
+
+- Go to repository/group page
+- Clone repository
+
+### 0.1.0
+
+- List projects on structure

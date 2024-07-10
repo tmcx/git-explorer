@@ -1,14 +1,15 @@
 {
   "name": "git-explorer",
-  "displayName": "git-explorer",
-  "description": "",
-  "version": "0.0.1",
+  "displayName": "Git Explorer",
+  "description": "Git Explorer, a Visual Studio Code extension designed to navigate and manage your Git repositories efficiently, providing an intuitive user interface and advanced functionalities.",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.90.0"
   },
   "categories": [
     "Other"
   ],
+  "icon": "media/icons/logo.png",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
@@ -35,6 +36,11 @@
         }
       ]
     }
+  },
+  "publisher": "tmcx",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tmcx/git-explorer"
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
