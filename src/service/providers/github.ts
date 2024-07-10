@@ -4,7 +4,7 @@ import {
   IRawGXGitTree,
   IStructuredGroups,
 } from '../../interfaces/extension-configurator';
-import { execGet } from '../../utils/functions';
+import { execGet, execGetParallel } from '../../utils/functions';
 
 const baseUrl = GLOBAL_STATE.PROVIDERS.GITHUB.URL;
 let authToken = '';
@@ -17,29 +17,11 @@ export class GithubService {
 
   async getProjects(org?: string): Promise<any[]> {
     org = org ? `orgs/${org}` : 'user';
-    const projects: any[] = [];
-    let res: any[] = [];
-    let i = 1;
-    do {
-      const url = `${baseUrl}/${org}/repos?per_page=100&page=${i}`;
-      res = await execGet<any[]>(url, authToken);
-      projects.push(...res);
-      i++;
-    } while (res.length > 0);
-    return projects;
+    return execGetParallel(`${baseUrl}/${org}/repos?`, authToken);
   }
 
   async getGroups(): Promise<any[]> {
-    const groups: any[] = [];
-    let res: any[] = [];
-    let i = 1;
-    do {
-      const url = `${baseUrl}/user/orgs?per_page=100&page=${i}`;
-      res = await execGet<any[]>(url, authToken);
-      groups.push(...res);
-      i++;
-    } while (res.length > 0);
-    return groups;
+    return execGetParallel(`${baseUrl}/user/orgs?`, authToken);
   }
 
   async getNested(token: string): Promise<IStructuredGroups> {

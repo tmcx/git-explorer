@@ -30,14 +30,45 @@ export const ObjectUtil = {
 };
 
 export async function execGet<T>(url: string, authToken: string) {
+  const retryLimit = 7;
+  let attempt = 0;
   do {
-    const data = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+    attempt++;
+    try {
+      const data = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+        signal: AbortSignal.timeout(7000),
+      });
+      if (data.status === 200) {
+        return (await data.json()) as T;
+      }
+    } catch (e) {}
+  } while (true || attempt === retryLimit);
+}
+
+export async function execGetParallel<T>(url: string, authToken: string) {
+  const parallelAmount = 10;
+  const results: any[] = [];
+  const promises = [];
+  let response = [];
+
+  let start = 0;
+  do {
+    const urls = Array.from({ length: parallelAmount }, (_, i) => i).map(() => {
+      start++;
+      return `${url}&per_page=100&page=${start}`;
     });
-    if (data.status === 200) {
-      return data.json() as T;
+    for (const url of urls) {
+      promises.push(execGet<any[]>(url, authToken));
+    }
+    response = (await Promise.all(promises)).flatMap((p) => p);
+    results.push(...response);
+    if (response.length === 0 || response.length < parallelAmount * 100) {
+      break;
     }
   } while (true);
+
+  return results;
 }
