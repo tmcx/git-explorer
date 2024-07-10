@@ -17,6 +17,7 @@ import { TreeItem, TreeStructure } from '../service/tree-structure';
 import { goTo } from '../process/go-to';
 import { gitClone } from '../process/git-clone';
 import { LANG } from '../config/constant';
+import { globalState } from '../extension';
 
 const TEXT = LANG[env.language].WVP.CONTENT;
 
@@ -40,12 +41,11 @@ export class ContentView implements WebviewViewProvider {
     _token: CancellationToken
   ) {
     this.webviewView = webviewView;
-    await this.loadView();
-
     this.webviewView.webview.options = {
       localResourceRoots: [this.context.extensionUri],
       enableScripts: true,
     };
+    await this.loadView();
 
     this.webviewView.webview.onDidReceiveMessage(async (event) => {
       if (event.type === EVENT.GO_TO) {
@@ -62,21 +62,65 @@ export class ContentView implements WebviewViewProvider {
 
   public async loadView() {
     this.webviewView.title = TEXT.TITLE;
+    const nonce = StringUtil.randomId();
+
     this.webviewView.webview.html = await this._getHtmlForWebview(
-      this.webviewView.webview
+      this.webviewView.webview,
+      nonce,
+      true
+    );
+
+    this.webviewView.webview.html = await this._getHtmlForWebview(
+      this.webviewView.webview,
+      nonce,
+      false
     );
   }
 
-  private async _getHtmlForWebview(webview: Webview) {
-    const nonce = StringUtil.randomId();
+  private _getHtmlForHeader() {
+    return `
+      <section class="header">
+        <span>${TEXT.TITLE}</span>
+        <span class="icon refresh" title="${TEXT.REFRESH_ALL}"></span>
+      </section>`;
+  }
+
+  private async _getHtmlForWebview(
+    webview: Webview,
+    nonce: string,
+    temp: boolean
+  ) {
+    const tokens = globalState.getTokens();
+
+    let content = '';
+
+    if (temp) {
+      content = `
+      <section class="temp-content">
+        ${Object.values(tokens)
+          .map(
+            ({ alias, server }) =>
+              `<section class="level">
+                <span class="icon refresh loading"></span>
+                <span class="icon group"></span>
+                <span>${alias}(${server})</span>
+              </section>
+            `
+          )
+          .join('')}
+      </section>`;
+    } else {
+      content = await this._getHtmlForTreeContent();
+    }
 
     return `
         <!DOCTYPE html>
               <html lang="en">
           ${this._getHtmlHead(webview, nonce)}
           <body>
-            ${await this._getHtmlForSearchBox()}
-            ${await this._getHtmlForTreeContent()}
+            ${this._getHtmlForSearchBox()}
+            ${this._getHtmlForHeader()}
+            ${content}
             ${await this._getHtmlScript(webview, nonce)}
           </body>
               </html>
@@ -150,10 +194,6 @@ export class ContentView implements WebviewViewProvider {
     };
 
     return `
-      <section class="header">
-          <span>${TEXT.TITLE}</span>
-          <span class="icon refresh" title="${TEXT.REFRESH_ALL}"></span>
-      </section>
       <section class="tree-content">${elements
         .map((element) => elsHTML(element, 15, true))
         .join('')}</section>

@@ -154,4 +154,25 @@ body {
     opacity: 1;
     cursor: pointer;
   }
+
+  &.loading {
+    animation: spinner 1.5s linear infinite;
+  }
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.temp-content {
+  padding: 0 15px;
+
+  .level {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 24px;
+  }
 }
