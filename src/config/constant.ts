@@ -1,8 +1,16 @@
-import * as vscode from 'vscode';
-
 export const GLOBAL_STATE = {
   KEY: {
     TOKENS: 'git-exp-tokens',
+  },
+  PROVIDERS: {
+    GITHUB: {
+      NAME: 'GitHub',
+      URL: 'https://api.github.com',
+    },
+    GITLAB: {
+      NAME: 'GitLab',
+      URL: 'https://gitlab.com',
+    },
   },
 };
 
@@ -30,6 +38,7 @@ export const LANG: {
         TITLE: string;
       };
       SET_CONFIGURATION: {
+        INVALID_TOKEN: any;
         CONNECTIONS: any;
         ADD_SERVER: any;
         SELECT_SERVER: any;
@@ -75,6 +84,7 @@ export const LANG: {
         NO_SERVERS_LOADED: 'No connections loaded',
         SELECT_SERVER: 'Select provider',
         TOKEN: 'Token',
+        INVALID_TOKEN: 'Invalid token',
       },
     },
   },
@@ -110,6 +120,7 @@ export const LANG: {
         NO_SERVERS_LOADED: 'No hay conexiones agregadas',
         SELECT_SERVER: 'Seleccionar proveedor',
         TOKEN: 'Token',
+        INVALID_TOKEN: 'Token inválido',
       },
     },
   },

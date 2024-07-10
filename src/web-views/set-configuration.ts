@@ -14,7 +14,7 @@ import {
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
 import { StringUtil } from '../utils/functions';
-import { LANG } from '../config/constant';
+import { GLOBAL_STATE, LANG } from '../config/constant';
 import { WEBVIEW_CONTENT } from './content';
 
 const TEXT = LANG[env.language].WVP.SET_CONFIGURATION;
@@ -93,6 +93,7 @@ export class SetConfigurationView implements WebviewViewProvider {
       </section>
       <input type="text" required placeholder="${TEXT.ALIAS}" id="alias">
       <input type="password" required placeholder="${TEXT.TOKEN}" id="token">
+      <span class="invalid-token">${TEXT.INVALID_TOKEN}</span>
       <button id="add-server" disabled>${TEXT.ADD}</button>
     `;
   }
@@ -126,9 +127,12 @@ export class SetConfigurationView implements WebviewViewProvider {
         'main.css'
       )
     );
+
+    const connectSrc = `connect-src ${GLOBAL_STATE.PROVIDERS.GITLAB.URL} ${GLOBAL_STATE.PROVIDERS.GITHUB.URL}`;
+
     return `
       <head>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; ${connectSrc}; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
         <link href="${styleMainUri}" rel="stylesheet">
       </head>
       `;

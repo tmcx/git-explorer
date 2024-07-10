@@ -114,3 +114,13 @@ h3 {
   display: flex !important;
   flex-direction: column;
 }
+
+.invalid-token {
+  display: none;
+  color: #fff;
+  text-transform: capitalize;
+  font-weight: 600;
+  background: #a00000;
+  width: fit-content;
+  padding: 2px 10px;
+}

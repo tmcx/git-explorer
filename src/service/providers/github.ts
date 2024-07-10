@@ -1,3 +1,4 @@
+import { GLOBAL_STATE } from '../../config/constant';
 import {
   IGroup,
   IRawGXGitTree,
@@ -5,7 +6,7 @@ import {
 } from '../../interfaces/extension-configurator';
 import { execGet } from '../../utils/functions';
 
-const baseUrl = `https://api.github.com`;
+const baseUrl = GLOBAL_STATE.PROVIDERS.GITHUB.URL;
 let authToken = '';
 
 export class GithubService {

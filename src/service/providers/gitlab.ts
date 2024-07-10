@@ -1,3 +1,4 @@
+import { GLOBAL_STATE } from '../../config/constant';
 import {
   IGroup,
   IRawGXGitTree,
@@ -5,7 +6,7 @@ import {
 } from '../../interfaces/extension-configurator';
 import { execGet } from '../../utils/functions';
 
-const baseUrl = `https://gitlab.com/api/v4`;
+const baseUrl = `${GLOBAL_STATE.PROVIDERS.GITLAB.URL}/api/v4`;
 let authToken = '';
 
 export class GitlabService {
