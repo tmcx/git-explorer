@@ -45,6 +45,9 @@
         let isValidToken = false;
         if (!!token.value.trim()) {
             isValidToken = await validateToken(token.value, selectedText.textContent.toLowerCase());
+        } else {
+            const invalidToken = document.querySelector('.invalid-token');
+            invalidToken.classList.remove('show');
         }
         addServer.disabled = !isValidToken || !token.value.trim() || !alias.value.trim() || !serverIsSelected;
         return !addServer.disabled;
