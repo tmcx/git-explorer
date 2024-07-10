@@ -29,7 +29,7 @@ export interface IWebviewViewProvider<T> {
 
 export interface IRawGXGitTree {
   group: {
-    parent_id: number;
+    parent_id: number | null;
     web_url: string;
     name: string;
     id: number;

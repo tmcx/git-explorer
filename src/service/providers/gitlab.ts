@@ -4,67 +4,68 @@ import {
   IRawGXGitTree,
   IStructuredGroups,
 } from '../../interfaces/extension-configurator';
-import { execGet } from '../../utils/functions';
+import { execGet, execGetParallel } from '../../utils/functions';
 
 const baseUrl = `${GLOBAL_STATE.PROVIDERS.GITLAB.URL}/api/v4`;
 let authToken = '';
 
 export class GitlabService {
-  async getProjects(groupId: number): Promise<any[]> {
-    const projects: any[] = [];
-    let res: any[] = [];
-    let i = 1;
-    do {
-      const url = `${baseUrl}/groups/${groupId}/projects?per_page=100&page=${i}`;
-      res = await execGet<any[]>(url, authToken);
-      projects.push(...res);
-      i++;
-    } while (res.length > 0);
-    return projects;
+  async getMyUser(): Promise<any> {
+    const url = `${baseUrl}/user`;
+    return execGet<any>(url, authToken);
+  }
+
+  async getAllProjects(): Promise<any[]> {
+    return execGetParallel(
+      `${baseUrl}/projects?membership=true&simple=true`,
+      authToken
+    );
   }
 
   async getGroups(): Promise<any[]> {
-    const groups: any[] = [];
-    let res: any[] = [];
-    let i = 1;
-    do {
-      const url = `${baseUrl}/groups?per_page=100&page=${i}`;
-      res = await execGet<any[]>(url, authToken);
-      groups.push(...res);
-      i++;
-    } while (res.length > 0);
-    return groups;
+    return execGetParallel(`${baseUrl}/groups?`, authToken);
   }
 
   async getNested(token: string): Promise<IStructuredGroups> {
     authToken = token;
-    const groups = await this.getGroups();
-    const promises: Promise<IRawGXGitTree>[] = [];
-    for (let i = 0; i < groups.length; i++) {
-      const group = groups[i];
-      promises.push(
-        (async () => {
-          const projects = await this.getProjects(group.id);
-          return {
-            projects: projects.map((project) => ({
-              clone_http: project.http_url_to_repo,
-              clone_ssh: project.ssh_url_to_repo,
-              web_url: project.web_url,
-              name: project.name,
-              id: project.id,
-            })),
-            group: {
-              parent_id: group.parent_id,
-              web_url: group.web_url,
-              name: group.name,
-              id: group.id,
-            },
-            subgroups: {},
-          };
-        })()
+    let groups = await this.getGroups();
+
+    const user = await this.getMyUser();
+    groups = [
+      ...groups,
+      {
+        parent_id: null,
+        web_url: user.web_url,
+        name: user.username,
+        id: -99,
+      },
+    ];
+
+    const projects = (await this.getAllProjects()).map((project) => ({
+      parent_web_url: project.namespace.web_url,
+      parent_id: project.namespace.id,
+      clone_http: project.http_url_to_repo,
+      clone_ssh: project.ssh_url_to_repo,
+      web_url: project.web_url,
+      name: project.name,
+      id: project.id,
+    }));
+
+    const data: IRawGXGitTree[] = [];
+    for (const group of groups) {
+      let projectsOfGroup = projects.filter(
+        (project) =>
+          project.parent_id === group.id ||
+          project.parent_web_url === group.web_url
       );
+      data.push({
+        projects: projectsOfGroup,
+        group,
+        subgroups: {},
+      });
     }
-    return this.format(await Promise.all(promises));
+
+    return this.format(data);
   }
 
   format(groups: IRawGXGitTree[]): IStructuredGroups {

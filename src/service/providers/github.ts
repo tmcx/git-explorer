@@ -89,7 +89,7 @@ export class GithubService {
     for (const groupId of keys) {
       const group = parsedGroups[groupId];
       const parentId = group.group.parent_id;
-      if (parsedGroups[parentId]) {
+      if (parentId && parsedGroups[parentId]) {
         parsedGroups[parentId].subgroups[groupId] = JSON.parse(
           JSON.stringify(group)
         );
