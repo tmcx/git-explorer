@@ -62,6 +62,10 @@ h3 {
   }
 }
 
+#username {
+  display: none;
+}
+
 .new-server {
   display: flex;
   flex-direction: column;

@@ -9,28 +9,29 @@ import {
   transformProviderToTree,
 } from '../../utils/functions';
 
-const baseUrl = GLOBAL_STATE.PROVIDERS.GITHUB.URL;
+const apiUrl = GLOBAL_STATE.PROVIDERS.GITHUB.API_URL;
+const webUrl = GLOBAL_STATE.PROVIDERS.GITHUB.WEB_URL;
 let authToken = '';
 
 export class GithubService {
   async getMyUser(): Promise<any> {
-    const url = `${baseUrl}/user`;
+    const url = `${apiUrl}/user`;
     return execGet<any>(url, authToken);
   }
 
   async getProjects(org?: string): Promise<any[]> {
     org = org ? `orgs/${org}` : 'user';
-    return execGetParallel(`${baseUrl}/${org}/repos?`, authToken);
+    return execGetParallel(`${apiUrl}/${org}/repos?`, authToken);
   }
 
   async getGroups(): Promise<any[]> {
-    return execGetParallel(`${baseUrl}/user/orgs?`, authToken);
+    return execGetParallel(`${apiUrl}/user/orgs?`, authToken);
   }
 
   async getNested(token: string): Promise<IStructuredGroups> {
     authToken = token;
     let groups = (await this.getGroups()).map((group) => ({
-      web_url: `https://github.com/${group.login}`,
+      web_url: `${webUrl}/${group.login}`,
       name: group.login,
       parent_id: -99,
       id: group.id,
@@ -41,7 +42,7 @@ export class GithubService {
       id: myUser.id,
       name: myUser.login,
       parent_id: -99,
-      web_url: `https://github.com/${myUser.login}?tab=repositories`,
+      web_url: `${webUrl}/${myUser.login}?tab=repositories`,
     });
     let projects = await this.getProjects();
 

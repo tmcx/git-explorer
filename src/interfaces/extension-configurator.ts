@@ -48,7 +48,7 @@ export interface IRawGXGitTree {
 
 export interface IGroup {
   group: IRawGXGitTree['group'];
-  subgroups: { [key: number]: IRawGXGitTree };
+  subgroups: { [key: number | string]: IRawGXGitTree };
   projects: IRawGXGitTree['projects'];
 }
 
@@ -59,6 +59,7 @@ export interface IStructuredGroups {
 export enum EServer {
   GITLAB = 'GitLab',
   GITHUB = 'GitHub',
+  BITBUCKET = 'BitBucket',
 }
 
 export interface IServer {

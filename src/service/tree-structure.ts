@@ -9,48 +9,40 @@ import { globalState } from '../extension';
 import { StringUtil, TreeItemUtil } from '../utils/functions';
 import { GitlabService } from './providers/gitlab';
 import { GithubService } from './providers/github';
+import { BitbucketService } from './providers/bitbucket';
 
 export class TreeStructure {
+  bitbucketService: BitbucketService;
   gitlabService: GitlabService;
   githubService: GithubService;
 
   constructor() {
+    this.bitbucketService = new BitbucketService();
     this.gitlabService = new GitlabService();
     this.githubService = new GithubService();
   }
 
   async get(): Promise<TreeItem[]> {
     const elements: TreeItem[] = [];
-    let projects: IStructuredGroups;
     let children: TreeItem[];
+
+    const services = {
+      [EServer.GITLAB]: this.gitlabService,
+      [EServer.GITHUB]: this.githubService,
+      [EServer.BITBUCKET]: this.bitbucketService,
+    };
 
     const tokens = globalState.getTokens();
     for (const key in tokens) {
       let serverCTI: TreeItem;
       const { token, server, alias } = tokens[key];
-      switch (server) {
-        case EServer.GITLAB:
-          projects = await this.gitlabService.getNested(token);
-          children = this.convertToTreeStructure(projects);
+      const projects = await services[server].getNested(token);
+      children = this.convertToTreeStructure(projects);
 
-          serverCTI = new TreeItem(`${alias}(${server})`);
-          serverCTI.setContext(ContextValue.GROUP);
-          serverCTI.setChildren(children);
-          elements.push(serverCTI);
-          break;
-        case EServer.GITHUB:
-          projects = await this.githubService.getNested(token);
-          children = this.convertToTreeStructure(projects);
-
-          serverCTI = new TreeItem(`${alias}(${server})`);
-          serverCTI.setContext(ContextValue.GROUP);
-          serverCTI.setChildren(children);
-          elements.push(serverCTI);
-          break;
-
-        default:
-          break;
-      }
+      serverCTI = new TreeItem(`${alias}(${server})`);
+      serverCTI.setContext(ContextValue.GROUP);
+      serverCTI.setChildren(children);
+      elements.push(serverCTI);
     }
     return elements;
   }

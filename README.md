@@ -18,10 +18,13 @@ Git Explorer, a Visual Studio Code extension designed to navigate and manage you
 
 Git Explorer does not require any additional configuration to start using it. Just add your git cloud provider connection.
 
-Currently compatible with:
+To get tokens:
 
 - Gitlab
 - Github
+- BitBucket:
+    * [App Passwords](https://bitbucket.org/account/settings/app-passwords/)
+    * Required permissions: Account(Read), Workspace membership(Read) and Projects(Read)
 
 ## Changelog
 

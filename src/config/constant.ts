@@ -5,11 +5,18 @@ export const GLOBAL_STATE = {
   PROVIDERS: {
     GITHUB: {
       NAME: 'GitHub',
-      URL: 'https://api.github.com',
+      WEB_URL: 'https://github.com',
+      API_URL: 'https://api.github.com',
     },
     GITLAB: {
       NAME: 'GitLab',
-      URL: 'https://gitlab.com',
+      WEB_URL: 'https://gitlab.com',
+      API_URL: 'https://gitlab.com',
+    },
+    BITBUCKET: {
+      NAME: 'BitBucket',
+      WEB_URL: 'https://bitbucket.org',
+      API_URL: 'https://api.bitbucket.org',
     },
   },
 };
@@ -38,6 +45,7 @@ export const LANG: {
         TITLE: string;
       };
       SET_CONFIGURATION: {
+        USERNAME: any;
         INVALID_TOKEN: any;
         CONNECTIONS: any;
         ADD_SERVER: any;
@@ -85,6 +93,7 @@ export const LANG: {
         SELECT_SERVER: 'Select provider',
         TOKEN: 'Token',
         INVALID_TOKEN: 'Invalid token',
+        USERNAME: 'Username',
       },
     },
   },
@@ -121,6 +130,7 @@ export const LANG: {
         SELECT_SERVER: 'Seleccionar proveedor',
         TOKEN: 'Token',
         INVALID_TOKEN: 'Token inválido',
+        USERNAME: 'Usuario',
       },
     },
   },

@@ -1,3 +1,4 @@
+import { GLOBAL_STATE } from '../config/constant';
 import {
   IGroup,
   IRawGXGitTree,
@@ -28,26 +29,40 @@ export const TreeItemUtil = {
   },
 };
 
-export async function execGet<T>(url: string, authToken: string) {
+export async function execGet<T>(
+  url: string,
+  authToken: string,
+  basic: boolean = false
+) {
   const retryLimit = 7;
   let attempt = 0;
+  const authType = basic ? 'Basic' : 'Bearer';
   do {
     attempt++;
     try {
       const data = await fetch(url, {
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `${authType} ${authToken}`,
         },
         signal: AbortSignal.timeout(7000),
       });
       if (data.status === 200) {
-        return (await data.json()) as T;
+        const response = await data.json();
+        return response as T;
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   } while (true || attempt === retryLimit);
 }
 
-export async function execGetParallel<T>(url: string, authToken: string) {
+export async function execGetParallel<T>(
+  url: string,
+  authToken: string,
+  basic: boolean = false
+) {
+  const isBitbucket =
+    url.search(GLOBAL_STATE.PROVIDERS.BITBUCKET.API_URL) !== -1;
   const parallelAmount = 10;
   const results: any[] = [];
   const promises = [];
@@ -57,18 +72,26 @@ export async function execGetParallel<T>(url: string, authToken: string) {
   do {
     const urls = Array.from({ length: parallelAmount }, (_, i) => i).map(() => {
       start++;
-      return `${url}&per_page=100&page=${start}`;
+      return `${url}&per_page=100&page=${start}&size=100`;
     });
     for (const url of urls) {
-      promises.push(execGet<any[]>(url, authToken));
+      promises.push(execGet<any[]>(url, authToken, basic));
     }
-    response = (await Promise.all(promises)).flatMap((p) => p);
+    const responses = await Promise.all(promises);
+
+    response = isBitbucket
+      ? responses.flatMap((p) => p['values'])
+      : responses.flatMap((p) => p);
     results.push(...response);
-    if (response.length === 0 || response.length < parallelAmount * 100) {
+    if (
+      (isBitbucket &&
+        responses.flatMap((p: any) => p['next'] ?? p).length === 0) ||
+      response.length === 0 ||
+      response.length < parallelAmount * 100
+    ) {
       break;
     }
   } while (true);
-
   return results;
 }
 
@@ -85,9 +108,7 @@ export function transformProviderToTree(
     };
   });
 
-  const keys = Object.keys(parsedGroups)
-    .map(Number)
-    .sort((a, b) => (a < b ? 1 : -1));
+  const keys = Object.keys(parsedGroups).sort((a, b) => (a < b ? 1 : -1));
 
   for (const groupId of keys) {
     const group = parsedGroups[groupId];
@@ -99,6 +120,5 @@ export function transformProviderToTree(
       delete parsedGroups[groupId];
     }
   }
-
   return parsedGroups;
 }

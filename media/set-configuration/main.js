@@ -3,26 +3,18 @@
     const token = document.querySelector("#token");
 
     const validateToken = async (tokenValue, provider) => {
-        let valid = false;
+        const urls = {
+            'github': { url: 'https://api.github.com/user', authType: 'Bearer' },
+            'gitlab': { url: 'https://gitlab.com/api/v4/user', authType: 'Bearer' },
+            'bitbucket': { url: 'https://api.bitbucket.org/2.0/user', authType: 'Basic' },
+        };
 
-        if (provider === 'github') {
-            const gb = await fetch('https://api.github.com/user', {
-                headers: {
-                    Authorization: `Bearer ${tokenValue}`,
-                }
-            });
-            valid = gb.status < 400;
-        }
-
-        if (provider === 'gitlab') {
-            const gl = await fetch('https://gitlab.com/api/v4/user', {
-                headers: {
-                    'PRIVATE-TOKEN': tokenValue,
-                }
-            });
-            valid = gl.status < 400;
-        }
-
+        const gb = await fetch(urls[provider].url, {
+            headers: {
+                Authorization: `${urls[provider].authType} ${tokenValue}`,
+            }
+        });
+        const valid = gb.status < 400;
         const invalidToken = document.querySelector('.invalid-token');
         if (!valid) {
             invalidToken.classList.add('show');
@@ -42,14 +34,29 @@
     checkToken = async () => {
         const selectedText = selected.querySelector('.text');
         const serverIsSelected = selectedText.getAttribute('aria-default') !== 'true';
+        const provider = selectedText.textContent.toLowerCase();
+        const username = document.querySelector('#username');
+
+        if (provider === 'bitbucket') {
+            username.classList.add('show');
+        } else {
+            username.classList.remove('show');
+        }
+
+        const isValidUsername = provider === 'bitbucket' ? !username.textContent.trim() : true;
+
         let isValidToken = false;
         if (!!token.value.trim()) {
-            isValidToken = await validateToken(token.value, selectedText.textContent.toLowerCase());
+            let tokenValue = token.value;
+            if (provider === 'bitbucket') {
+                tokenValue = btoa(`${username.value}:${token.value}`);
+            }
+            isValidToken = await validateToken(tokenValue, provider);
         } else {
             const invalidToken = document.querySelector('.invalid-token');
             invalidToken.classList.remove('show');
         }
-        addServer.disabled = !isValidToken || !token.value.trim() || !alias.value.trim() || !serverIsSelected;
+        addServer.disabled = !isValidToken || !token.value.trim() || !alias.value.trim() || !serverIsSelected || !isValidUsername;
         return !addServer.disabled;
     };
 
@@ -59,13 +66,17 @@
 
     addServer.addEventListener("click", () => {
         const selectedText = selected.querySelector('.text');
+        const provider = selectedText.textContent.toLowerCase();
+        const username = document.querySelector('#username');
+
+        const tokenValue = provider === 'bitbucket' ? btoa(`${username.value}:${token.value}`) : token.value;
         vscode.postMessage({
             type: "add-server",
             data: {
                 server: selectedText.textContent,
                 id: Date.now().toString(),
                 alias: alias.value,
-                token: token.value,
+                token: tokenValue,
             },
         });
     });

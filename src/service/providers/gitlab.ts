@@ -9,7 +9,7 @@ import {
   transformProviderToTree,
 } from '../../utils/functions';
 
-const baseUrl = `${GLOBAL_STATE.PROVIDERS.GITLAB.URL}/api/v4`;
+const baseUrl = `${GLOBAL_STATE.PROVIDERS.GITLAB.API_URL}/api/v4`;
 let authToken = '';
 
 export class GitlabService {

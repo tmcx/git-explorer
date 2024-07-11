@@ -92,6 +92,7 @@ export class SetConfigurationView implements WebviewViewProvider {
           </section>
       </section>
       <input type="text" required placeholder="${TEXT.ALIAS}" id="alias">
+      <input type="text" required placeholder="${TEXT.USERNAME}" id="username">
       <input type="password" required placeholder="${TEXT.TOKEN}" id="token">
       <span class="invalid-token">${TEXT.INVALID_TOKEN}</span>
       <button id="add-server" disabled>${TEXT.ADD}</button>
@@ -128,11 +129,13 @@ export class SetConfigurationView implements WebviewViewProvider {
       )
     );
 
-    const connectSrc = `connect-src ${GLOBAL_STATE.PROVIDERS.GITLAB.URL} ${GLOBAL_STATE.PROVIDERS.GITHUB.URL}`;
+    const urls = Object.values(GLOBAL_STATE.PROVIDERS)
+      .map((provider) => provider.API_URL)
+      .join(' ');
 
     return `
       <head>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; ${connectSrc}; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src ${urls}; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
         <link href="${styleMainUri}" rel="stylesheet">
       </head>
       `;
