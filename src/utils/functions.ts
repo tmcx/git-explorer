@@ -1,3 +1,8 @@
+import {
+  IGroup,
+  IRawGXGitTree,
+  IStructuredGroups,
+} from '../interfaces/extension-configurator';
 import { TreeItem } from '../service/tree-structure';
 
 export const StringUtil = {
@@ -20,12 +25,6 @@ export const TreeItemUtil = {
         sensitivity: 'base',
       })
     );
-  },
-};
-
-export const ObjectUtil = {
-  clone: <T>(obj: T): T => {
-    return JSON.parse(JSON.stringify(obj));
   },
 };
 
@@ -71,4 +70,35 @@ export async function execGetParallel<T>(url: string, authToken: string) {
   } while (true);
 
   return results;
+}
+
+export function transformProviderToTree(
+  groups: IRawGXGitTree[]
+): IStructuredGroups {
+  const parsedGroups: { [groupId: string]: IGroup } = {};
+
+  groups.forEach((group) => {
+    parsedGroups[group.group.id] = {
+      projects: group.projects,
+      group: group.group,
+      subgroups: {},
+    };
+  });
+
+  const keys = Object.keys(parsedGroups)
+    .map(Number)
+    .sort((a, b) => (a < b ? 1 : -1));
+
+  for (const groupId of keys) {
+    const group = parsedGroups[groupId];
+    const parentId = group.group.parent_id;
+    if (parentId && parsedGroups[parentId]) {
+      parsedGroups[parentId].subgroups[groupId] = JSON.parse(
+        JSON.stringify(group)
+      );
+      delete parsedGroups[groupId];
+    }
+  }
+
+  return parsedGroups;
 }

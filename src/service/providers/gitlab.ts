@@ -1,10 +1,13 @@
 import { GLOBAL_STATE } from '../../config/constant';
 import {
-  IGroup,
   IRawGXGitTree,
   IStructuredGroups,
 } from '../../interfaces/extension-configurator';
-import { execGet, execGetParallel } from '../../utils/functions';
+import {
+  execGet,
+  execGetParallel,
+  transformProviderToTree,
+} from '../../utils/functions';
 
 const baseUrl = `${GLOBAL_STATE.PROVIDERS.GITLAB.URL}/api/v4`;
 let authToken = '';
@@ -65,35 +68,6 @@ export class GitlabService {
       });
     }
 
-    return this.format(data);
-  }
-
-  format(groups: IRawGXGitTree[]): IStructuredGroups {
-    const parsedGroups: { [groupId: string]: IGroup } = {};
-
-    groups.forEach((group) => {
-      parsedGroups[group.group.id] = {
-        projects: group.projects,
-        group: group.group,
-        subgroups: {},
-      };
-    });
-
-    const keys = Object.keys(parsedGroups)
-      .map(Number)
-      .sort((a, b) => (a < b ? 1 : -1));
-
-    for (const groupId of keys) {
-      const group = parsedGroups[groupId];
-      const parentId = group.group.parent_id;
-      if (parentId) {
-        parsedGroups[parentId].subgroups[groupId] = JSON.parse(
-          JSON.stringify(group)
-        );
-        delete parsedGroups[groupId];
-      }
-    }
-
-    return parsedGroups;
+    return transformProviderToTree(data);
   }
 }
