@@ -9,6 +9,10 @@
             'bitbucket': { url: 'https://api.bitbucket.org/2.0/user', authType: 'Basic' },
         };
 
+        if (!urls[provider]) {
+            return false;
+        }
+
         const gb = await fetch(urls[provider].url, {
             headers: {
                 Authorization: `${urls[provider].authType} ${tokenValue}`,
@@ -104,6 +108,7 @@
                 id: el.target.dataset.id,
             },
         });
+        btn.disabled = true;
     }));
 
 

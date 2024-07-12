@@ -52,10 +52,12 @@ export class ContentView implements WebviewViewProvider {
   treeStructure: TreeStructure;
   webviewView!: WebviewView;
   treeCache: TreeItem[];
+  promises: Promise<void>[];
 
   constructor(private readonly context: ExtensionContext) {
     this.treeStructure = new TreeStructure();
     this.treeCache = [];
+    this.promises = [];
   }
 
   async resolveWebviewView(
@@ -86,35 +88,40 @@ export class ContentView implements WebviewViewProvider {
   }
 
   public async loadView(event?: Events) {
-    this.webviewView.title = TEXT.TITLE;
-    const nonce = StringUtil.randomId();
+    await Promise.all(this.promises);
+    const task = async () => {
+      this.webviewView.title = TEXT.TITLE;
+      const nonce = StringUtil.randomId();
 
-    if (
-      event?.type === ECEvent.FIRST_LOAD ||
-      event?.type === ECEvent.REFRESH_ALL_CONNECTION
-    ) {
-      this.webviewView.webview.html =
-        await this._getTempHtmlForFirstLoadWebview(
+      if (
+        event?.type === ECEvent.FIRST_LOAD ||
+        event?.type === ECEvent.REFRESH_ALL_CONNECTION
+      ) {
+        this.webviewView.webview.html =
+          await this._getTempHtmlForFirstLoadWebview(
+            this.webviewView.webview,
+            nonce
+          );
+      }
+
+      if (event?.type === EEvent.ADD_SERVER) {
+        this.webviewView.webview.html = await this._getHtmlForWebview(
           this.webviewView.webview,
-          nonce
+          nonce,
+          true,
+          event
         );
-    }
+      }
 
-    if (event?.type === EEvent.ADD_SERVER) {
       this.webviewView.webview.html = await this._getHtmlForWebview(
         this.webviewView.webview,
         nonce,
-        true,
+        false,
         event
       );
-    }
+    };
 
-    this.webviewView.webview.html = await this._getHtmlForWebview(
-      this.webviewView.webview,
-      nonce,
-      false,
-      event
-    );
+    this.promises.push(task());
   }
 
   private _getHtmlForHeader(loading = false) {
