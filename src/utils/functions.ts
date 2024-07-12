@@ -4,7 +4,6 @@ import {
   IRawGXGitTree,
   IStructuredGroups,
 } from '../interfaces/extension-configurator';
-import { TreeItem } from '../service/tree-structure';
 
 export const StringUtil = {
   randomId: (justLetters?: boolean) => {
@@ -19,13 +18,13 @@ export const StringUtil = {
   },
 };
 
-export const TreeItemUtil = {
-  orderByName: (arr: TreeItem[]) => {
-    arr.sort((a, b) =>
-      String(a.label).localeCompare(String(b.label), undefined, {
+export const ArrayUtil = {
+  sort: (arr: { [key: string]: any }[], field: string) => {
+    arr.sort((a, b) => {
+      return a[field].trim().localeCompare(b[field].trim(), undefined, {
         sensitivity: 'base',
-      })
-    );
+      });
+    });
   },
 };
 

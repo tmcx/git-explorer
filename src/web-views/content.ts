@@ -12,27 +12,50 @@ import {
   ContextValue,
   IWebviewViewProvider,
 } from '../interfaces/extension-configurator';
-import { StringUtil } from '../utils/functions';
+import { ArrayUtil, StringUtil } from '../utils/functions';
 import { TreeItem, TreeStructure } from '../service/tree-structure';
 import { goTo } from '../process/go-to';
 import { gitClone } from '../process/git-clone';
 import { LANG } from '../config/constant';
+import { EEvent, SetConfigurationEvent } from './set-configuration';
 import { globalState } from '../extension';
 
 const TEXT = LANG[env.language].WVP.CONTENT;
 
-const EVENT = {
-  REFRESH_ALL_CONNECTION: 'refresh-all-connection',
-  GIT_CLONE: 'git-clone',
-  GO_TO: 'go-to',
-};
+export enum ECEvent {
+  REFRESH_ALL_CONNECTION = 'refresh-all-connection',
+  GIT_CLONE = 'git-clone',
+  FIRST_LOAD = 'first-load',
+  LOADING = 'loading',
+  GO_TO = 'go-to',
+}
+
+export type ContentEvent =
+  | {
+      type: ECEvent.GIT_CLONE;
+      data: { http: string; ssh: string };
+    }
+  | {
+      type: ECEvent.GO_TO;
+      data: { url: string };
+    }
+  | {
+      type: ECEvent.REFRESH_ALL_CONNECTION;
+    }
+  | {
+      type: ECEvent.FIRST_LOAD;
+    };
+
+export type Events = SetConfigurationEvent | ContentEvent;
 
 export class ContentView implements WebviewViewProvider {
   treeStructure: TreeStructure;
   webviewView!: WebviewView;
+  treeCache: TreeItem[];
 
   constructor(private readonly context: ExtensionContext) {
     this.treeStructure = new TreeStructure();
+    this.treeCache = [];
   }
 
   async resolveWebviewView(
@@ -45,74 +68,110 @@ export class ContentView implements WebviewViewProvider {
       localResourceRoots: [this.context.extensionUri],
       enableScripts: true,
     };
-    await this.loadView();
+    await this.loadView({
+      type: ECEvent.FIRST_LOAD,
+    });
 
     this.webviewView.webview.onDidReceiveMessage(async (event) => {
-      if (event.type === EVENT.GO_TO) {
+      if (event.type === ECEvent.GO_TO) {
         goTo(event.data.url);
       }
-      if (event.type === EVENT.GIT_CLONE) {
+      if (event.type === ECEvent.GIT_CLONE) {
         gitClone(event.data.urls);
       }
-      if (event.type === EVENT.REFRESH_ALL_CONNECTION) {
-        this.loadView();
+      if (event.type === ECEvent.REFRESH_ALL_CONNECTION) {
+        this.loadView(event);
       }
     });
   }
 
-  public async loadView() {
+  public async loadView(event?: Events) {
     this.webviewView.title = TEXT.TITLE;
     const nonce = StringUtil.randomId();
 
-    this.webviewView.webview.html = await this._getHtmlForWebview(
-      this.webviewView.webview,
-      nonce,
-      true
-    );
+    if (
+      event?.type === ECEvent.FIRST_LOAD ||
+      event?.type === ECEvent.REFRESH_ALL_CONNECTION
+    ) {
+      this.webviewView.webview.html =
+        await this._getTempHtmlForFirstLoadWebview(
+          this.webviewView.webview,
+          nonce
+        );
+    }
+
+    if (event?.type === EEvent.ADD_SERVER) {
+      this.webviewView.webview.html = await this._getHtmlForWebview(
+        this.webviewView.webview,
+        nonce,
+        true,
+        event
+      );
+    }
 
     this.webviewView.webview.html = await this._getHtmlForWebview(
       this.webviewView.webview,
       nonce,
-      false
+      false,
+      event
     );
   }
 
-  private _getHtmlForHeader() {
+  private _getHtmlForHeader(loading = false) {
     return `
       <section class="header">
         <span>${TEXT.TITLE}</span>
-        <span class="icon refresh" title="${TEXT.REFRESH_ALL}"></span>
+        <span class="icon refresh ${loading ? 'disabled' : ''}" title="${
+      TEXT.REFRESH_ALL
+    }"></span>
       </section>`;
   }
 
-  private async _getHtmlForWebview(
+  private async _getTempHtmlForFirstLoadWebview(
     webview: Webview,
-    nonce: string,
-    temp: boolean
+    nonce: string
   ) {
     const tokens = globalState.getTokens();
-
-    let content = '';
-
-    if (temp) {
-      content = `
+    const names = Object.values(tokens).map(({ alias, server }) => ({
+      name: `${alias}(${server})`,
+    }));
+    ArrayUtil.sort(names, 'name');
+    const content = `
       <section class="temp-content">
-        ${Object.values(tokens)
+        ${names
           .map(
-            ({ alias, server }) =>
+            ({ name }) =>
               `<section class="level">
                 <span class="icon refresh loading"></span>
                 <span class="icon group"></span>
-                <span>${alias}(${server})</span>
+                <span>${name}</span>
               </section>
             `
           )
           .join('')}
       </section>`;
-    } else {
-      content = await this._getHtmlForTreeContent();
-    }
 
+    return `
+        <!DOCTYPE html>
+              <html lang="en">
+          ${this._getHtmlHead(webview, nonce)}
+          <body>
+            ${this._getHtmlForSearchBox()}
+            ${this._getHtmlForHeader(true)}
+            ${content}
+            ${await this._getHtmlScript(webview, nonce)}
+          </body>
+              </html>
+      `;
+  }
+
+  private async _getHtmlForWebview(
+    webview: Webview,
+    nonce: string,
+    temp: boolean,
+    event?: Events
+  ) {
+    const content = await this._getHtmlForTreeContent(temp, event);
     return `
         <!DOCTYPE html>
               <html lang="en">
@@ -136,18 +195,20 @@ export class ContentView implements WebviewViewProvider {
     `;
   }
 
-  private async _getHtmlForTreeContent() {
-    const elements = await this.treeStructure.get();
-    const elsHTML = (
-      element: TreeItem,
-      spaces: number,
-      isProviderLevel?: boolean
-    ) => {
+  private async _getHtmlForTreeContent(temp: boolean, event?: Events) {
+    await this.updateTreeCache(temp, event);
+
+    const elsHTML = (element: TreeItem, spaces = 15) => {
+      const isProviderLevel = !!element.tokenId;
       const type =
         element.contextValue === ContextValue.GROUP ? 'group' : 'repository';
 
-      const iconCollapsed =
+      let iconCollapsed =
         type === ContextValue.GROUP ? '<span class="expand">></span>' : '';
+
+      if (element.loading) {
+        iconCollapsed = '<span class="icon refresh loading"></span>';
+      }
 
       const gitCloneIcon =
         element.contextValue === ContextValue.REPOSITORY
@@ -164,7 +225,9 @@ export class ContentView implements WebviewViewProvider {
         : `<span class="icon go-to" data-url="${element.urls?.webUrl}" title="${TEXT.GO_TO}"></span>`;
 
       let text = `
-        <button class="title ${type}" data-id="${element.id}" style="padding-left: ${spaces}px">
+        <button class="title ${type} ${
+        !!element.loading ? 'disabled' : ''
+      }" data-id="${element.id}" style="padding-left: ${spaces}px">
           ${iconCollapsed}
           <span class="icon ${type}"></span>
           <span class="name" title="${element.label}">${element.label}</span>
@@ -194,10 +257,42 @@ export class ContentView implements WebviewViewProvider {
     };
 
     return `
-      <section class="tree-content">${elements
-        .map((element) => elsHTML(element, 15, true))
+      <section class="tree-content">${this.treeCache
+        .map((element) => elsHTML(element))
         .join('')}</section>
     `;
+  }
+
+  async updateTreeCache(temp: boolean, event: Events | undefined) {
+    switch (event?.type) {
+      case EEvent.ADD_SERVER:
+        if (temp) {
+          const tempTreeItem = new TreeItem(
+            `${event.data.alias}(${event.data.server})`
+          );
+          tempTreeItem.setContext(ContextValue.GROUP);
+          tempTreeItem.tokenId = event.data.id;
+          tempTreeItem.loading = true;
+          this.treeCache = [...this.treeCache, tempTreeItem];
+        } else {
+          this.treeCache = this.treeCache.filter(
+            (el) => el.tokenId !== event.data.id
+          );
+          const newServer = await this.treeStructure.get(event.data.id);
+          this.treeCache = [...this.treeCache, ...newServer];
+        }
+        break;
+      case EEvent.DELETE_SERVER:
+        this.treeCache = this.treeCache.filter(
+          (element) => element.tokenId !== event.data.id
+        );
+        break;
+      case ECEvent.REFRESH_ALL_CONNECTION:
+        this.treeCache = await this.treeStructure.get();
+      default:
+        this.treeCache = await this.treeStructure.get();
+        break;
+    }
   }
 
   private _getHtmlHead(webview: Webview, nonce: String) {

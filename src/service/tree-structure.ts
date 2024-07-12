@@ -6,7 +6,7 @@ import {
   IStructuredGroups,
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
-import { StringUtil, TreeItemUtil } from '../utils/functions';
+import { StringUtil, ArrayUtil } from '../utils/functions';
 import { GitlabService } from './providers/gitlab';
 import { GithubService } from './providers/github';
 import { BitbucketService } from './providers/bitbucket';
@@ -22,7 +22,7 @@ export class TreeStructure {
     this.githubService = new GithubService();
   }
 
-  async get(): Promise<TreeItem[]> {
+  async get(id?: string): Promise<TreeItem[]> {
     const elements: TreeItem[] = [];
     let children: TreeItem[];
 
@@ -32,18 +32,24 @@ export class TreeStructure {
       [EServer.BITBUCKET]: this.bitbucketService,
     };
 
-    const tokens = globalState.getTokens();
+    let tokens = globalState.getTokens();
+    if (id) {
+      tokens = { [id]: tokens[id] };
+    }
+
     for (const key in tokens) {
       let serverCTI: TreeItem;
-      const { token, server, alias } = tokens[key];
+      const { token, server, alias, id } = tokens[key];
       const projects = await services[server].getNested(token);
       children = this.convertToTreeStructure(projects);
 
       serverCTI = new TreeItem(`${alias}(${server})`);
       serverCTI.setContext(ContextValue.GROUP);
       serverCTI.setChildren(children);
+      serverCTI.tokenId = id;
       elements.push(serverCTI);
     }
+    ArrayUtil.sort(elements, 'label');
     return elements;
   }
 
@@ -54,7 +60,7 @@ export class TreeStructure {
         for (const key in group.subgroups) {
           children.push(parsedGroupsToContentTreeItems(group.subgroups[key]));
         }
-        TreeItemUtil.orderByName(children);
+        ArrayUtil.sort(children, 'label');
       }
       if (group.projects) {
         const pChildren: TreeItem[] = [];
@@ -68,7 +74,7 @@ export class TreeStructure {
           });
           pChildren.push(pCTT);
         });
-        TreeItemUtil.orderByName(pChildren);
+        ArrayUtil.sort(pChildren, 'label');
         children.push(...pChildren);
       }
 
@@ -89,7 +95,7 @@ export class TreeStructure {
       const group = structureGroups[key];
       contentTreeItems.push(parsedGroupsToContentTreeItems(group));
     }
-    TreeItemUtil.orderByName(contentTreeItems);
+    ArrayUtil.sort(contentTreeItems, 'label');
     return contentTreeItems;
   }
 }
@@ -97,6 +103,8 @@ export class TreeStructure {
 export class TreeItem {
   id: string;
   contextValue: string;
+  loading?: boolean;
+  tokenId?: string;
   description: string;
   iconPath: string;
   label: string;

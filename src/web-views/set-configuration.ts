@@ -10,19 +10,30 @@ import {
 } from 'vscode';
 import {
   EServer,
+  IServer,
   IWebviewViewProvider,
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
-import { StringUtil } from '../utils/functions';
+import { ArrayUtil, StringUtil } from '../utils/functions';
 import { GLOBAL_STATE, LANG } from '../config/constant';
 import { WEBVIEW_CONTENT } from './content';
 
 const TEXT = LANG[env.language].WVP.SET_CONFIGURATION;
 
-const EVENT = {
-  DELETE_SERVER: 'delete-server',
-  ADD_SERVER: 'add-server',
-};
+export enum EEvent {
+  DELETE_SERVER = 'delete-server',
+  ADD_SERVER = 'add-server',
+}
+
+export type SetConfigurationEvent =
+  | {
+      type: EEvent.ADD_SERVER;
+      data: IServer;
+    }
+  | {
+      type: EEvent.DELETE_SERVER;
+      data: { id: string };
+    };
 
 export class SetConfigurationView implements WebviewViewProvider {
   webviewView!: WebviewView;
@@ -42,16 +53,18 @@ export class SetConfigurationView implements WebviewViewProvider {
       enableScripts: true,
     };
 
-    this.webviewView.webview.onDidReceiveMessage(async (event) => {
-      if (event.type === EVENT.ADD_SERVER) {
-        globalState.updateTokens(event.data);
+    this.webviewView.webview.onDidReceiveMessage(
+      async (event: SetConfigurationEvent) => {
+        if (event.type === EEvent.ADD_SERVER) {
+          globalState.updateTokens(event.data);
+        }
+        if (event.type === EEvent.DELETE_SERVER) {
+          globalState.deleteToken(event.data.id);
+        }
+        await this.loadView();
+        WEBVIEW_CONTENT.instance?.loadView(event);
       }
-      if (event.type === EVENT.DELETE_SERVER) {
-        globalState.deleteToken(event.data.id);
-      }
-      await this.loadView();
-      WEBVIEW_CONTENT.instance?.loadView();
-    });
+    );
   }
 
   public async loadView() {
@@ -101,14 +114,19 @@ export class SetConfigurationView implements WebviewViewProvider {
 
   private _getHtmlForListServers() {
     const tokens = Object.values(globalState.getTokens());
+    const names = tokens.map(({ alias, server, id }) => ({
+      name: `${alias}(${server})`,
+      id,
+    }));
+    ArrayUtil.sort(names, 'name');
     return `
       <h3>${TEXT.CONNECTIONS}</h3>
       <section id="list-servers">
-        ${tokens
+        ${names
           .map(
-            ({ alias, server, id }) => `
+            ({ name, id }) => `
             <span>
-              <span title="${alias}(${server})">${alias}(${server})</span>
+              <span title="${name}">${name}</span>
               <button class="delete" id="delete-server" data-id="${id}">${TEXT.DELETE}</button>
             </span>
           `

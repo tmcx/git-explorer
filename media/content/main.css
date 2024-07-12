@@ -22,6 +22,14 @@ body {
     align-items: center;
     gap: 3px;
 
+    &.disabled {
+      cursor: unset;
+
+      &:hover {
+        background: none;
+      }
+    }
+
     &.repository {
       grid-template-columns: 18px 1fr 15px 20px;
       padding-bottom: 4px;
@@ -157,6 +165,15 @@ body {
 
   &.loading {
     animation: spinner 1.5s linear infinite;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 0.5;
+      cursor: unset;
+    }
   }
 }
 
