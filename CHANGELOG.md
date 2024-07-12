@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.2.0
+
+- Bitbucket support
+- Refresh and load optimized
+
 ### 1.0.0
 
 - Validate token previous save

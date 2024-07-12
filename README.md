@@ -21,12 +21,21 @@ Git Explorer does not require any additional configuration to start using it. Ju
 To get tokens:
 
 - Gitlab
+    * [Access Token](https://gitlab.com/-/user_settings/personal_access_tokens)
+    * Required permissions: read_api
 - Github
+    * [Git Token(Classic)](https://github.com/settings/tokens/new)
+    * Required permissions: repo(Full), user(read:user), admin:org(read:org) and project(read:project)
 - BitBucket:
     * [App Passwords](https://bitbucket.org/account/settings/app-passwords/)
     * Required permissions: Account(Read), Workspace membership(Read) and Projects(Read)
 
 ## Changelog
+
+### 1.2.0
+
+- Bitbucket support
+- Refresh and load optimized
 
 ### 1.0.0
 
