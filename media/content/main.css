@@ -163,10 +163,6 @@ body {
     cursor: pointer;
   }
 
-  &.loading {
-    animation: spinner 1.5s linear infinite;
-  }
-
   &.disabled {
     opacity: 0.5;
 
@@ -174,12 +170,6 @@ body {
       opacity: 0.5;
       cursor: unset;
     }
-  }
-}
-
-@keyframes spinner {
-  to {
-    transform: rotate(360deg);
   }
 }
 

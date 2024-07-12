@@ -63,6 +63,7 @@
     alias?.addEventListener("keyup", checkToken);
     token?.addEventListener("keyup", checkToken);
 
+    const listServers = document.querySelector('#list-servers');
 
     addServer.addEventListener("click", () => {
         const selectedText = selected.querySelector('.text');
@@ -79,6 +80,20 @@
                 token: tokenValue,
             },
         });
+
+        const noContent = listServers.querySelector('.no-content');
+
+        if (noContent) {
+            listServers.removeChild(noContent);
+        }
+
+        const name = `${alias.value}(${selectedText.textContent})`;
+        const span = document.createElement("SPAN");
+        span.innerHTML = `<span>
+                <span class="icon refresh loading"></span>
+                <span title="${name}">${name}</span>
+            </span>`;
+        listServers.appendChild(span);
     });
 
 

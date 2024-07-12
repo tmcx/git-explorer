@@ -61,8 +61,8 @@ export class SetConfigurationView implements WebviewViewProvider {
         if (event.type === EEvent.DELETE_SERVER) {
           globalState.deleteToken(event.data.id);
         }
+        await WEBVIEW_CONTENT.instance?.loadView(event);
         await this.loadView();
-        WEBVIEW_CONTENT.instance?.loadView(event);
       }
     );
   }
@@ -132,7 +132,7 @@ export class SetConfigurationView implements WebviewViewProvider {
           `
           )
           .join('')}
-        ${tokens.length === 0 ? `<span>${TEXT.NO_SERVERS_LOADED}</span>` : ''}
+        ${tokens.length === 0 ? `<span class="no-content">${TEXT.NO_SERVERS_LOADED}</span>` : ''}
       </section>
     `;
   }
@@ -151,10 +151,15 @@ export class SetConfigurationView implements WebviewViewProvider {
       .map((provider) => provider.API_URL)
       .join(' ');
 
+
+    const iconsUri = webview.asWebviewUri(
+      Uri.joinPath(this.context.extensionUri, 'media', 'content', 'icons.css')
+    );
     return `
       <head>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src ${urls}; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+        <meta http-equiv="Content-Security-Policy" content="connect-src ${urls}; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
         <link href="${styleMainUri}" rel="stylesheet">
+        <link href="${iconsUri}" rel="stylesheet">
       </head>
       `;
   }
