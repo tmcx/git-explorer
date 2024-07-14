@@ -109,6 +109,7 @@
             },
         });
         btn.disabled = true;
+        btn.classList.add('button-loading');
     }));
 
 
