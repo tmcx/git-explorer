@@ -106,7 +106,10 @@ export class SetConfigurationView implements WebviewViewProvider {
       </section>
       <input type="text" required placeholder="${TEXT.ALIAS}" id="alias">
       <input type="text" required placeholder="${TEXT.USERNAME}" id="username">
-      <input type="password" required placeholder="${TEXT.TOKEN}" id="token">
+      <div class="password">
+        <input type="password" required placeholder="${TEXT.TOKEN}" id="token">
+        <a class="hidden" href="" title="${TEXT.GET_TOKEN_URL_TITLE}">i</a>
+      </div>
       <span class="invalid-token">${TEXT.INVALID_TOKEN}</span>
       <button id="add-server" disabled>${TEXT.ADD}</button>
     `;

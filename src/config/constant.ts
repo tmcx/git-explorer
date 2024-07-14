@@ -41,27 +41,28 @@ export const LANG: {
     };
     WVP: {
       CONTENT: {
-        INVALID_TOKEN: any;
-        REFRESH: any;
-        REFRESH_ALL: any;
-        EMPTY_GROUP: any;
-        SEARCH: any;
-        CLEAR_ALL: any;
-        GIT_CLONE: any;
-        GO_TO: any;
+        INVALID_TOKEN: string;
+        REFRESH: string;
+        REFRESH_ALL: string;
+        EMPTY_GROUP: string;
+        SEARCH: string;
+        CLEAR_ALL: string;
+        GIT_CLONE: string;
+        GO_TO: string;
         TITLE: string;
       };
       SET_CONFIGURATION: {
-        USERNAME: any;
-        INVALID_TOKEN: any;
-        CONNECTIONS: any;
-        ADD_SERVER: any;
-        SELECT_SERVER: any;
-        ALIAS: any;
-        TOKEN: any;
-        ADD: any;
-        DELETE: any;
-        NO_SERVERS_LOADED: any;
+        GET_TOKEN_URL_TITLE: string;
+        USERNAME: string;
+        INVALID_TOKEN: string;
+        CONNECTIONS: string;
+        ADD_SERVER: string;
+        SELECT_SERVER: string;
+        ALIAS: string;
+        TOKEN: string;
+        ADD: string;
+        DELETE: string;
+        NO_SERVERS_LOADED: string;
         TITLE: string;
       };
     };
@@ -102,6 +103,7 @@ export const LANG: {
         TOKEN: 'Token',
         INVALID_TOKEN: 'Invalid token',
         USERNAME: 'Username',
+        GET_TOKEN_URL_TITLE: 'Get token',
       },
     },
   },
@@ -140,6 +142,7 @@ export const LANG: {
         TOKEN: 'Token',
         INVALID_TOKEN: 'Token inválido',
         USERNAME: 'Usuario',
+        GET_TOKEN_URL_TITLE: 'Obtener token',
       },
     },
   },

@@ -1,13 +1,13 @@
 (function () {
     const vscode = acquireVsCodeApi();
     const token = document.querySelector("#token");
+    const urls = {
+        'github': { url: 'https://api.github.com/user', authType: 'Bearer', getTokenUrl: 'https://github.com/settings/tokens/new' },
+        'gitlab': { url: 'https://gitlab.com/api/v4/user', authType: 'Bearer', getTokenUrl: 'https://gitlab.com/-/user_settings/personal_access_tokens' },
+        'bitbucket': { url: 'https://api.bitbucket.org/2.0/user', authType: 'Basic', getTokenUrl: 'https://bitbucket.org/account/settings/app-passwords/' },
+    };
 
     const validateToken = async (tokenValue, provider) => {
-        const urls = {
-            'github': { url: 'https://api.github.com/user', authType: 'Bearer' },
-            'gitlab': { url: 'https://gitlab.com/api/v4/user', authType: 'Bearer' },
-            'bitbucket': { url: 'https://api.bitbucket.org/2.0/user', authType: 'Basic' },
-        };
 
         if (!urls[provider]) {
             return false;
@@ -125,6 +125,10 @@
             selectedText.setAttribute('aria-default', 'false');
             selected.parentElement.querySelector('.options').classList.remove('show');
             debounce(checkToken);
+            const infoToken = document.querySelector('.password a');
+            infoToken.classList.remove('hidden');
+            const getTokenUrl = urls[el.target.textContent.toLowerCase()]?.getTokenUrl;
+            infoToken.setAttribute('href', getTokenUrl);
         });
     });
 })();

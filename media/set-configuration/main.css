@@ -144,3 +144,31 @@ h3 {
   font-size: 12px;
   margin-right: 5px;
 }
+
+div.password {
+  position: relative;
+
+  input {
+    width: calc(100% - 40px);
+    padding-right: 30px;
+  }
+
+  a {
+    text-decoration: none;
+    border-radius: 50%;
+    border: solid 1px var(--vscode-textLink-activeForeground);
+    width: 14px;
+    height: 14px;
+    text-align: center;
+    font-weight: bold;
+    line-height: 14px;
+    position: absolute;
+    right: 7px;
+    top: 5px;
+    font-size: 11px;
+
+    &.hidden {
+      display: none;
+    }
+  }
+}
