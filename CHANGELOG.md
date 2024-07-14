@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.3.0
+- UI feedback improvement(on delete and add connection)
+- Validate connections on load
+
 ### 1.2.0
 
 - Bitbucket support
