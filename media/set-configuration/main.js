@@ -64,8 +64,8 @@
         return !addServer.disabled;
     };
 
-    alias?.addEventListener("keyup", checkToken);
-    token?.addEventListener("keyup", checkToken);
+    alias?.addEventListener("keyup", debounce(checkToken));
+    token?.addEventListener("keyup", debounce(checkToken));
 
     const listServers = document.querySelector('#list-servers');
 
@@ -124,7 +124,17 @@
             selectedText.textContent = el.target.textContent;
             selectedText.setAttribute('aria-default', 'false');
             selected.parentElement.querySelector('.options').classList.remove('show');
-            checkToken();
+            debounce(checkToken);
         });
     });
 })();
+
+
+function debounce(func, wait = 500) {
+    let timeout;
+    return function (...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}
