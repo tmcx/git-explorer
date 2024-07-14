@@ -14,7 +14,7 @@ import {
   IWebviewViewProvider,
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
-import { ArrayUtil, StringUtil } from '../utils/functions';
+import { ArrayUtil, StringUtil, validateToken } from '../utils/functions';
 import { GLOBAL_STATE, LANG } from '../config/constant';
 import { WEBVIEW_CONTENT } from './content';
 
@@ -82,7 +82,7 @@ export class SetConfigurationView implements WebviewViewProvider {
               <html lang="en">
           ${this._getHtmlHead(webview, nonce)}
           <body>
-            ${this._getHtmlForListServers()}
+            ${await this._getHtmlForListServers()}
             ${this._getHtmlForAddServer()}
             ${await this._getHtmlScript(webview, nonce)}
           </body>
@@ -112,27 +112,41 @@ export class SetConfigurationView implements WebviewViewProvider {
     `;
   }
 
-  private _getHtmlForListServers() {
+  private async _getHtmlForListServers() {
     const tokens = Object.values(globalState.getTokens());
-    const names = tokens.map(({ alias, server, id }) => ({
-      name: `${alias}(${server})`,
-      id,
-    }));
+
+    const names = [];
+
+    for (const { id, alias, server, token } of tokens) {
+      let validToken = await validateToken(token, server.toLowerCase());
+      let description = validToken ? '' : TEXT.INVALID_TOKEN;
+      names.push({ name: `${alias}(${server})`, id, validToken, description });
+    }
+
     ArrayUtil.sort(names, 'name');
     return `
       <h3>${TEXT.CONNECTIONS}</h3>
       <section id="list-servers">
         ${names
           .map(
-            ({ name, id }) => `
+            ({ name, id, validToken }) => `
             <span>
+              ${`<span class="description invalid-token"> ${
+                !validToken ? TEXT.INVALID_TOKEN : ''
+              } </span>`}
               <span title="${name}">${name}</span>
-              <button class="delete" id="delete-server" data-id="${id}">${TEXT.DELETE}</button>
+              <button class="delete" id="delete-server" data-id="${id}">${
+              TEXT.DELETE
+            }</button>
             </span>
           `
           )
           .join('')}
-        ${tokens.length === 0 ? `<span class="no-content">${TEXT.NO_SERVERS_LOADED}</span>` : ''}
+        ${
+          tokens.length === 0
+            ? `<span class="no-content">${TEXT.NO_SERVERS_LOADED}</span>`
+            : ''
+        }
       </section>
     `;
   }
@@ -148,9 +162,8 @@ export class SetConfigurationView implements WebviewViewProvider {
     );
 
     const urls = Object.values(GLOBAL_STATE.PROVIDERS)
-      .map((provider) => provider.API_URL)
+      .map((provider) => provider.VALIDATE_TOKEN_URL)
       .join(' ');
-
 
     const iconsUri = webview.asWebviewUri(
       Uri.joinPath(this.context.extensionUri, 'media', 'content', 'icons.css')

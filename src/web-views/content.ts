@@ -206,12 +206,17 @@ export class ContentView implements WebviewViewProvider {
     await this.updateTreeCache(temp, event);
 
     const elsHTML = (element: TreeItem, spaces = 15) => {
+      let { validToken } = element;
+      validToken =
+        validToken === undefined || validToken === true ? true : false;
       const isProviderLevel = !!element.tokenId;
       const type =
         element.contextValue === ContextValue.GROUP ? 'group' : 'repository';
 
       let iconCollapsed =
-        type === ContextValue.GROUP ? '<span class="expand">></span>' : '';
+        type === ContextValue.GROUP && validToken
+          ? '<span class="expand">></span>'
+          : '';
 
       if (element.loading) {
         iconCollapsed = '<span class="icon refresh loading"></span>';
@@ -230,14 +235,19 @@ export class ContentView implements WebviewViewProvider {
       const goToIcon = isProviderLevel
         ? ''
         : `<span class="icon go-to" data-url="${element.urls?.webUrl}" title="${TEXT.GO_TO}"></span>`;
+      let description = validToken ? element.description : TEXT.INVALID_TOKEN;
+
+      description = `<span class="description">${description}</span>`;
 
       let text = `
-        <button class="title ${type} ${
-        !!element.loading ? 'disabled' : ''
+        <button class="title ${type} ${!!element.loading ? 'disabled' : ''} ${
+        !validToken ? 'invalid-token' : ''
       }" data-id="${element.id}" style="padding-left: ${spaces}px">
           ${iconCollapsed}
           <span class="icon ${type}"></span>
-          <span class="name" title="${element.label}">${element.label}</span>
+          <span class="name" title="${element.label}">${description}${
+        element.label
+      }</span>
           ${gitCloneIcon}
           ${goToIcon}
         </button>

@@ -121,3 +121,32 @@ export function transformProviderToTree(
   }
   return parsedGroups;
 }
+
+export async function validateToken(tokenValue: string, provider: string) {
+  const { BITBUCKET, GITHUB, GITLAB } = GLOBAL_STATE.PROVIDERS;
+  const urls: { [key: string]: { url: string; authType: string } } = {
+    github: { url: GITHUB.VALIDATE_TOKEN_URL, authType: 'Bearer' },
+    gitlab: { url: GITLAB.VALIDATE_TOKEN_URL, authType: 'Bearer' },
+    bitbucket: { url: BITBUCKET.VALIDATE_TOKEN_URL, authType: 'Basic' },
+  };
+
+  if (!urls[provider]) {
+    return false;
+  }
+
+  let attempt = 0;
+  do {
+    attempt++;
+    const gb = await fetch(urls[provider].url, {
+      headers: {
+        Authorization: `${urls[provider].authType} ${tokenValue}`,
+      },
+    });
+
+    if (gb.status < 400) {
+      return true;
+    }
+  } while (attempt <= 4);
+
+  return false;
+}

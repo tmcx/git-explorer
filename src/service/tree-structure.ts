@@ -6,7 +6,7 @@ import {
   IStructuredGroups,
 } from '../interfaces/extension-configurator';
 import { globalState } from '../extension';
-import { StringUtil, ArrayUtil } from '../utils/functions';
+import { StringUtil, ArrayUtil, validateToken } from '../utils/functions';
 import { GitlabService } from './providers/gitlab';
 import { GithubService } from './providers/github';
 import { BitbucketService } from './providers/bitbucket';
@@ -40,13 +40,18 @@ export class TreeStructure {
     for (const key in tokens) {
       let serverCTI: TreeItem;
       const { token, server, alias, id } = tokens[key];
-      const projects = await services[server].getNested(token);
-      children = this.convertToTreeStructure(projects);
 
       serverCTI = new TreeItem(`${alias}(${server})`);
       serverCTI.setContext(ContextValue.GROUP);
-      serverCTI.setChildren(children);
       serverCTI.tokenId = id;
+
+      const valid = await validateToken(token, server.toLowerCase());
+      serverCTI.validToken = valid;
+      if (valid) {
+        const projects = await services[server].getNested(token);
+        children = this.convertToTreeStructure(projects);
+        serverCTI.setChildren(children);
+      }
       elements.push(serverCTI);
     }
     ArrayUtil.sort(elements, 'label');
@@ -103,6 +108,7 @@ export class TreeStructure {
 export class TreeItem {
   id: string;
   contextValue: string;
+  validToken?: boolean;
   loading?: boolean;
   tokenId?: string;
   description: string;
@@ -126,6 +132,7 @@ export class TreeItem {
     this.description = description || '';
     this.iconPath = iconPath || '';
     this.label = label || '';
+    this.children = [];
   }
 
   private setIcon() {

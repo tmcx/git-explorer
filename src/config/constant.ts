@@ -7,16 +7,22 @@ export const GLOBAL_STATE = {
       NAME: 'GitHub',
       WEB_URL: 'https://github.com',
       API_URL: 'https://api.github.com',
+      VALIDATE_TOKEN_URL: 'https://api.github.com/user',
+      AUTH_PROVIDER: 'github',
     },
     GITLAB: {
       NAME: 'GitLab',
       WEB_URL: 'https://gitlab.com',
-      API_URL: 'https://gitlab.com',
+      API_URL: 'https://gitlab.com/api/v4',
+      VALIDATE_TOKEN_URL: 'https://gitlab.com/api/v4/user',
+      AUTH_PROVIDER: 'gitlab',
     },
     BITBUCKET: {
       NAME: 'BitBucket',
       WEB_URL: 'https://bitbucket.org',
-      API_URL: 'https://api.bitbucket.org',
+      API_URL: 'https://api.bitbucket.org/2.0',
+      VALIDATE_TOKEN_URL: 'https://api.bitbucket.org/2.0/user',
+      AUTH_PROVIDER: 'bitbucket',
     },
   },
 };
@@ -35,6 +41,7 @@ export const LANG: {
     };
     WVP: {
       CONTENT: {
+        INVALID_TOKEN: any;
         REFRESH: any;
         REFRESH_ALL: any;
         EMPTY_GROUP: any;
@@ -80,6 +87,7 @@ export const LANG: {
         GO_TO: 'Go to',
         SEARCH: 'Search',
         REFRESH_ALL: 'Refresh All',
+        INVALID_TOKEN: 'Invalid token',
         REFRESH: 'Refresh',
       },
       SET_CONFIGURATION: {
@@ -117,6 +125,7 @@ export const LANG: {
         GO_TO: 'Ir a',
         SEARCH: 'Buscar',
         REFRESH_ALL: 'Refrescar Todos',
+        INVALID_TOKEN: 'Token inválido',
         REFRESH: 'Refrescar',
       },
       SET_CONFIGURATION: {

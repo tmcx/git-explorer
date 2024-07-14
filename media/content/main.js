@@ -2,7 +2,7 @@
 (function () {
     const vscode = acquireVsCodeApi();
 
-    const groups = document.querySelectorAll('.title.group');
+    const groups = document.querySelectorAll('.title.group:not(.disabled):not(.invalid-token)');
 
     groups.forEach(group => {
         group.addEventListener('click', () => {

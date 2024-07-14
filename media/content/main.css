@@ -30,6 +30,26 @@ body {
       }
     }
 
+    &.invalid-token {
+      cursor: unset;
+      margin-right: 5px;
+
+      &:hover {
+        background: none;
+      }
+
+      .description {
+        color: #fff;
+        background: #a00000;
+        border-radius: 3px;
+        padding: 0 2px;
+        height: 15px;
+        display: inline-block;
+        line-height: 12px;
+        font-size: 12px;
+      }
+    }
+
     &.repository {
       grid-template-columns: 18px 1fr 15px 20px;
       padding-bottom: 4px;

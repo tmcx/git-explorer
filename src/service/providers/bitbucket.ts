@@ -9,7 +9,7 @@ import {
   transformProviderToTree,
 } from '../../utils/functions';
 
-const baseUrl = `${GLOBAL_STATE.PROVIDERS.BITBUCKET.API_URL}/2.0`;
+const baseUrl = GLOBAL_STATE.PROVIDERS.BITBUCKET.API_URL;
 let authToken = '';
 
 export class BitbucketService {
