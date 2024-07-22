@@ -24,6 +24,7 @@ const TEXT = LANG[env.language].WVP.CONTENT;
 
 export enum ECEvent {
   REFRESH_ALL_CONNECTION = 'refresh-all-connection',
+  REFRESH_A_CONNECTION = 'refresh-a-connection',
   GIT_CLONE = 'git-clone',
   FIRST_LOAD = 'first-load',
   LOADING = 'loading',
@@ -41,6 +42,10 @@ export type ContentEvent =
     }
   | {
       type: ECEvent.REFRESH_ALL_CONNECTION;
+    }
+  | {
+      type: ECEvent.REFRESH_A_CONNECTION;
+      data: { id: string };
     }
   | {
       type: ECEvent.FIRST_LOAD;
@@ -82,6 +87,9 @@ export class ContentView implements WebviewViewProvider {
       if (event.type === ECEvent.REFRESH_ALL_CONNECTION) {
         this.loadView(event);
       }
+      if (event.type === ECEvent.REFRESH_A_CONNECTION) {
+        this.loadView(event);
+      }
     });
   }
 
@@ -100,6 +108,15 @@ export class ContentView implements WebviewViewProvider {
             this.webviewView.webview,
             nonce
           );
+      }
+
+      if (event?.type === ECEvent.REFRESH_A_CONNECTION) {
+        this.webviewView.webview.html = await this._getHtmlForWebview(
+          this.webviewView.webview,
+          nonce,
+          false,
+          event
+        );
       }
 
       if (event?.type === EEvent.ADD_SERVER) {
@@ -201,9 +218,11 @@ export class ContentView implements WebviewViewProvider {
   }
 
   private async _getHtmlForTreeContent(temp: boolean, event?: Events) {
+    const basePadding = 15;
     await this.updateTreeCache(temp, event);
 
-    const elsHTML = (element: TreeItem, spaces = 15) => {
+    const elsHTML = (element: TreeItem, padding: number) => {
+      const isParent = basePadding === padding;
       let { validToken } = element;
       validToken =
         validToken === undefined || validToken === true ? true : false;
@@ -219,6 +238,10 @@ export class ContentView implements WebviewViewProvider {
       if (element.loading) {
         iconCollapsed = '<span class="icon refresh loading"></span>';
       }
+
+      const iconRefresh = isParent
+        ? `<span class="parent icon refresh" data-id="${element.tokenId}"></span>`
+        : '';
 
       const gitCloneIcon =
         element.contextValue === ContextValue.REPOSITORY
@@ -240,7 +263,7 @@ export class ContentView implements WebviewViewProvider {
       let text = `
         <button class="title ${type} ${!!element.loading ? 'disabled' : ''} ${
         !validToken ? 'invalid-token' : ''
-      }" data-id="${element.id}" style="padding-left: ${spaces}px">
+      }" data-id="${element.id}" style="padding-left: ${padding}px">
           ${iconCollapsed}
           <span class="icon ${type}"></span>
           <span class="name" title="${element.label}">${description}${
@@ -248,21 +271,22 @@ export class ContentView implements WebviewViewProvider {
       }</span>
           ${gitCloneIcon}
           ${goToIcon}
+          ${iconRefresh}
         </button>
       `;
 
       if (element.children.length > 0) {
         text += `
         <section class="children" id="${element.id}">
-          <span class="line" style="margin-left: ${spaces}px;"></span>
-          ${element.children.map((e) => elsHTML(e, spaces + 15)).join('')}
+          <span class="line" style="margin-left: ${padding}px;"></span>
+          ${element.children.map((e) => elsHTML(e, padding + 15)).join('')}
         </section>`;
       }
 
       if (type === ContextValue.GROUP && element.children.length === 0) {
         text += `
         <section class="children empty" id="${element.id}">
-          <span style="margin-left: ${spaces + 20}px;">${
+          <span style="margin-left: ${padding + 20}px;">${
           TEXT.EMPTY_GROUP
         }</span>
         </section>`;
@@ -273,7 +297,7 @@ export class ContentView implements WebviewViewProvider {
 
     return `
       <section class="tree-content">${this.treeCache
-        .map((element) => elsHTML(element))
+        .map((element) => elsHTML(element, basePadding))
         .join('')}</section>
     `;
   }
@@ -296,6 +320,13 @@ export class ContentView implements WebviewViewProvider {
           const newServer = await STreeStructure.get({ id: event.data.id });
           this.treeCache = [...this.treeCache, ...newServer];
         }
+        break;
+      case ECEvent.REFRESH_A_CONNECTION:
+        const newServer = await STreeStructure.get({ id: event.data.id });
+        const idx = this.treeCache.findIndex(
+          (el) => el.tokenId === event.data.id
+        );
+        this.treeCache[idx] = newServer[0];
         break;
       case EEvent.DELETE_SERVER:
         this.treeCache = this.treeCache.filter(

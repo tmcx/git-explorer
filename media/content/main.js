@@ -7,6 +7,7 @@
     groups.forEach(group => {
         group.addEventListener('click', () => {
             const childrenId = group.dataset.id;
+            if (!document.querySelector('#' + childrenId)) { return; }            
             document.querySelector('#' + childrenId).classList.toggle('expanded');
             group.classList.toggle('expanded');
         });
@@ -111,6 +112,19 @@
             type: 'refresh-all-connection'
         });
     });
+
+    document.querySelectorAll('.parent.icon.refresh').forEach((e) => e.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const id = event.target.dataset.id;
+        vscode.postMessage({
+            type: 'refresh-a-connection',
+            data: { id }
+        });
+        e.parentElement.classList.add('disabled');
+        e.parentElement.nextElementSibling.outerHTML = '';
+        e.parentElement.querySelector('.expand').textContent = '';
+        e.classList.add('loading');
+    }));
 
 })();
 
