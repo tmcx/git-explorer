@@ -2,7 +2,7 @@
   "name": "git-explorer",
   "displayName": "Git Explorer",
   "description": "Git Explorer, a Visual Studio Code extension designed to navigate and manage your Git repositories efficiently, providing an intuitive user interface and advanced functionalities.",
-  "version": "1.3.0",
+  "version": "1.5.1",
   "engines": {
     "vscode": "^1.90.0"
   },

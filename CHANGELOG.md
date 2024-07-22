@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.5.1
+- Load content on vscode start
+- Refresh by connection
+- Clone repository fixed
+
 ### 1.3.0
 - UI feedback improvement(on delete and add connection)
 - Validate connections on load
