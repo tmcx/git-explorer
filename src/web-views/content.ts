@@ -82,7 +82,7 @@ export class ContentView implements WebviewViewProvider {
         goTo(event.data.url);
       }
       if (event.type === ECEvent.GIT_CLONE) {
-        gitClone(event.data.urls);
+        gitClone(event.data);
       }
       if (event.type === ECEvent.REFRESH_ALL_CONNECTION) {
         this.loadView(event);
