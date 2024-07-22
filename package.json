@@ -10,7 +10,9 @@
     "Other"
   ],
   "icon": "media/icons/logo.png",
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {

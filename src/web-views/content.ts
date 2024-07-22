@@ -13,7 +13,7 @@ import {
   IWebviewViewProvider,
 } from '../interfaces/extension-configurator';
 import { ArrayUtil, StringUtil } from '../utils/functions';
-import { TreeItem, TreeStructure } from '../service/tree-structure';
+import { TreeItem, STreeStructure } from '../service/tree-structure';
 import { goTo } from '../process/go-to';
 import { gitClone } from '../process/git-clone';
 import { LANG } from '../config/constant';
@@ -49,13 +49,11 @@ export type ContentEvent =
 export type Events = SetConfigurationEvent | ContentEvent;
 
 export class ContentView implements WebviewViewProvider {
-  treeStructure: TreeStructure;
   webviewView!: WebviewView;
   treeCache: TreeItem[];
   promises: Promise<void>[];
 
   constructor(private readonly context: ExtensionContext) {
-    this.treeStructure = new TreeStructure();
     this.treeCache = [];
     this.promises = [];
   }
@@ -295,7 +293,7 @@ export class ContentView implements WebviewViewProvider {
           this.treeCache = this.treeCache.filter(
             (el) => el.tokenId !== event.data.id
           );
-          const newServer = await this.treeStructure.get(event.data.id);
+          const newServer = await STreeStructure.get({ id: event.data.id });
           this.treeCache = [...this.treeCache, ...newServer];
         }
         break;
@@ -305,9 +303,9 @@ export class ContentView implements WebviewViewProvider {
         );
         break;
       case ECEvent.REFRESH_ALL_CONNECTION:
-        this.treeCache = await this.treeStructure.get();
-      default:
-        this.treeCache = await this.treeStructure.get();
+        this.treeCache = await STreeStructure.get();
+      case ECEvent.FIRST_LOAD:
+        this.treeCache = await STreeStructure.get({ refresh: false });
         break;
     }
   }

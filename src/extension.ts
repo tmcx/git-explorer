@@ -2,13 +2,14 @@ import * as vscode from 'vscode';
 
 import { ExtensionConfigurator } from './config/extension-configurator';
 import { GlobalState } from './config/global-state';
+import { STreeStructure } from './service/tree-structure';
 
 export let globalState: GlobalState;
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   globalState = new GlobalState(context);
   const extConf = new ExtensionConfigurator(context);
-
+  await STreeStructure.get();
   const { WEBVIEW_CONTENT } = require('./web-views/content');
   extConf.registerWebviewViewProvider(WEBVIEW_CONTENT.id, WEBVIEW_CONTENT.wvp);
 

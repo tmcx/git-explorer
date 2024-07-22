@@ -11,7 +11,8 @@ import { GitlabService } from './providers/gitlab';
 import { GithubService } from './providers/github';
 import { BitbucketService } from './providers/bitbucket';
 
-export class TreeStructure {
+class TreeStructure {
+  cache: Map<string, TreeItem>;
   bitbucketService: BitbucketService;
   gitlabService: GitlabService;
   githubService: GithubService;
@@ -20,12 +21,20 @@ export class TreeStructure {
     this.bitbucketService = new BitbucketService();
     this.gitlabService = new GitlabService();
     this.githubService = new GithubService();
+    this.cache = new Map();
   }
 
-  async get(id?: string): Promise<TreeItem[]> {
+  async get(
+    opts: {
+      id?: string;
+      refresh?: boolean;
+    } = {
+      refresh: true,
+    }
+  ): Promise<TreeItem[]> {
+    let { id, refresh } = opts;
     const elements: TreeItem[] = [];
     let children: TreeItem[];
-
     const services = {
       [EServer.GITLAB]: this.gitlabService,
       [EServer.GITHUB]: this.githubService,
@@ -35,24 +44,36 @@ export class TreeStructure {
     let tokens = globalState.getTokens();
     if (id) {
       tokens = { [id]: tokens[id] };
+      refresh = true;
     }
 
-    for (const key in tokens) {
-      let serverCTI: TreeItem;
-      const { token, server, alias, id } = tokens[key];
-
-      serverCTI = new TreeItem(`${alias}(${server})`);
-      serverCTI.setContext(ContextValue.GROUP);
-      serverCTI.tokenId = id;
-
-      const valid = await validateToken(token, server.toLowerCase());
-      serverCTI.validToken = valid;
-      if (valid) {
-        const projects = await services[server].getNested(token);
-        children = this.convertToTreeStructure(projects);
-        serverCTI.setChildren(children);
+    if (refresh) {
+      if (!id) {
+        this.cache.clear();
       }
-      elements.push(serverCTI);
+      this.cache.clear();
+      for (const key in tokens) {
+        let serverCTI: TreeItem;
+        const { token, server, alias, id } = tokens[key];
+
+        serverCTI = new TreeItem(`${alias}(${server})`);
+        serverCTI.setContext(ContextValue.GROUP);
+        serverCTI.tokenId = id;
+
+        const valid = await validateToken(token, server.toLowerCase());
+        serverCTI.validToken = valid;
+        if (valid) {
+          const projects = await services[server].getNested(token);
+          children = this.convertToTreeStructure(projects);
+          serverCTI.setChildren(children);
+        }
+        elements.push(serverCTI);
+        this.cache.set(id, serverCTI);
+      }
+    } else {
+      for (const el of this.cache.entries()) {
+        elements.push(el[1]);
+      }
     }
     ArrayUtil.sort(elements, 'label');
     return elements;
@@ -159,3 +180,5 @@ export class TreeItem {
     this.children = children;
   }
 }
+
+export const STreeStructure = new TreeStructure();
