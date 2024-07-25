@@ -29,17 +29,17 @@ export interface IWebviewViewProvider<T> {
 
 export interface IRawGXGitTree {
   group: {
-    parent_id: number | null;
+    parent_id: number | string | null;
     web_url: string;
     name: string;
-    id: number;
+    id: number | string;
   };
   projects: {
     clone_http: string;
     clone_ssh: string;
     web_url: string;
     name: string;
-    id: number;
+    id: number | string;
   }[];
   subgroups: {
     [key: string]: IRawGXGitTree;

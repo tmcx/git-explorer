@@ -91,7 +91,7 @@ export async function execGetParallel<T>(
       break;
     }
   } while (true);
-  return results;
+  return results as T;
 }
 
 export function transformProviderToTree(
