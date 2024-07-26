@@ -7,7 +7,7 @@
     groups.forEach(group => {
         group.addEventListener('click', () => {
             const childrenId = group.dataset.id;
-            if (!document.querySelector('#' + childrenId)) { return; }            
+            if (!document.querySelector('#' + childrenId)) { return; }
             document.querySelector('#' + childrenId).classList.toggle('expanded');
             group.classList.toggle('expanded');
         });
@@ -29,7 +29,7 @@
     });
 
 
-    const goTos = document.querySelectorAll('.icon.go-to');
+    const goTos = document.querySelectorAll('.icon.go-to, .create-repo, .create-group');
     goTos.forEach(goTo => {
         goTo.addEventListener('click', (event) => {
             event.stopPropagation();
@@ -125,6 +125,10 @@
         e.parentElement.querySelector('.expand').textContent = '';
         e.classList.add('loading');
     }));
+
+
+    document.querySelector('.create-group').addEventListener('click', (event) => { event.stopPropagation(); });
+    document.querySelector('.create-repo').addEventListener('click', (event) => { event.stopPropagation(); });
 
 })();
 

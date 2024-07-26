@@ -29,6 +29,8 @@ export interface IWebviewViewProvider<T> {
 
 export interface IRawGXGitTree {
   group: {
+    create_subgroup_url: string;
+    create_repo_url: string;
     parent_id: number | string | null;
     web_url: string;
     name: string;

@@ -30,12 +30,16 @@ export class GithubService {
 
   async getNested(token: string): Promise<IStructuredGroups> {
     authToken = token;
-    let groups = (await this.getGroups()).map((group) => ({
-      web_url: `${webUrl}/${group.login}`,
-      name: group.login,
-      parent_id: -99,
-      id: group.id,
-    }));
+    let groups: IRawGXGitTree['group'][] = (await this.getGroups()).map(
+      (group) => ({
+        create_repo_url: `${webUrl}/organizations/${group.login}/repositories/new`,
+        create_subgroup_url: '',
+        web_url: `${webUrl}/${group.login}`,
+        name: group.login,
+        parent_id: -99,
+        id: group.id,
+      })
+    );
 
     const myUser = await this.getMyUser();
     groups.push({
@@ -43,12 +47,16 @@ export class GithubService {
       name: myUser.login,
       parent_id: -99,
       web_url: `${webUrl}/${myUser.login}?tab=repositories`,
+      create_subgroup_url: '',
+      create_repo_url: `${webUrl}/organizations/${myUser.login}/repositories/new`,
     });
-    let projects = await this.getProjects();
-
-    projects = projects.map((project) => ({
+    let srcProjects = await this.getProjects();
+    
+    const projects = srcProjects.map((project) => ({
+      parent_web_url: `${webUrl}/${project.owner.login}`,
+      clone_http: project.clone_url,
+      clone_ssh: project.ssh_url,
       parent_id: project.owner.id,
-      http_url: project.clone_url,
       ssh_url: project.ssh_url,
       web_url: project.html_url,
       name: project.name,
@@ -58,15 +66,7 @@ export class GithubService {
     const outProjects: IRawGXGitTree[] = [];
     for (const group of groups) {
       outProjects.push({
-        projects: projects
-          .filter(({ parent_id }) => parent_id === group.id)
-          .map((project) => ({
-            clone_http: project.http_url,
-            clone_ssh: project.ssh_url,
-            web_url: project.web_url,
-            name: project.name,
-            id: project.id,
-          })),
+        projects: projects.filter(({ parent_id }) => parent_id === group.id),
         group,
         subgroups: {},
       });

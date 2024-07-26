@@ -10,6 +10,7 @@ import {
 } from '../../utils/functions';
 
 const baseUrl = GLOBAL_STATE.PROVIDERS.GITLAB.API_URL;
+const webUrl = GLOBAL_STATE.PROVIDERS.GITLAB.WEB_URL;
 let authToken = '';
 
 export class GitlabService {
@@ -31,18 +32,24 @@ export class GitlabService {
 
   async getNested(token: string): Promise<IStructuredGroups> {
     authToken = token;
-    let groups = await this.getGroups();
+    const srcGroups = await this.getGroups();
 
     const user = await this.getMyUser();
-    groups = [
-      ...groups,
+    const groups: IRawGXGitTree['group'][] = [
+      ...srcGroups,
       {
         parent_id: null,
         web_url: user.web_url,
         name: user.username,
         id: -99,
       },
-    ];
+    ].map((group) => ({
+      ...group,
+      ...{
+        create_subgroup_url: `${webUrl}/groups/new?parent_id=${group.id}`,
+        create_repo_url: `${webUrl}/projects/new?namespace_id=${group.id}`,
+      },
+    }));
 
     const projects = (await this.getAllProjects()).map((project) => ({
       parent_web_url: project.namespace.web_url,

@@ -222,36 +222,47 @@ export class ContentView implements WebviewViewProvider {
     await this.updateTreeCache(temp, event);
 
     const elsHTML = (element: TreeItem, padding: number) => {
+      const isRepository = element.contextValue === ContextValue.REPOSITORY;
+      const isGroup = element.contextValue === ContextValue.GROUP;
       const isParent = basePadding === padding;
       let { validToken } = element;
       validToken =
         validToken === undefined || validToken === true ? true : false;
       const isProviderLevel = !!element.tokenId;
-      const type =
-        element.contextValue === ContextValue.GROUP ? 'group' : 'repository';
+      const type = isGroup ? 'group' : 'repository';
 
       let iconCollapsed =
-        type === ContextValue.GROUP && validToken
-          ? '<span class="expand">></span>'
-          : '';
+        isGroup && validToken ? '<span class="expand">></span>' : '';
 
       if (element.loading) {
         iconCollapsed = '<span class="icon refresh loading"></span>';
+      }
+
+      let iconCreateChild = '';
+      if (element.urls?.new) {
+        iconCreateChild +=
+          '<div class="create-child"><span>+</span><div class="options">';
+        if (element.urls?.new?.repo) {
+          iconCreateChild += `<span class="create-repo" data-url="${element.urls?.new?.repo}"><span class="icon repository"></span>${TEXT.REPOSITORY}</span>`;
+        }
+        if (element.urls?.new?.subgroup) {
+          iconCreateChild += `<span class="create-group" data-url="${element.urls?.new?.subgroup}"><span class="icon group"></span>${TEXT.GROUP}</span>`;
+        }
+        iconCreateChild += '</div></div>';
       }
 
       const iconRefresh = isParent
         ? `<span class="parent icon refresh" data-id="${element.tokenId}"></span>`
         : '';
 
-      const gitCloneIcon =
-        element.contextValue === ContextValue.REPOSITORY
-          ? `<span
+      const gitCloneIcon = isRepository
+        ? `<span
               class="icon git-clone"
               data-http="${element.urls?.http}"
               data-ssh="${element.urls?.ssh}"
               title="${TEXT.GIT_CLONE}"
             ></span>`
-          : '';
+        : '';
 
       const goToIcon = isProviderLevel
         ? ''
@@ -266,12 +277,13 @@ export class ContentView implements WebviewViewProvider {
       }" data-id="${element.id}" style="padding-left: ${padding}px">
           ${iconCollapsed}
           <span class="icon ${type}"></span>
+          ${iconRefresh}
+          ${goToIcon}
+          ${gitCloneIcon}
+          ${iconCreateChild}
           <span class="name" title="${element.label}">${description}${
         element.label
       }</span>
-          ${gitCloneIcon}
-          ${goToIcon}
-          ${iconRefresh}
         </button>
       `;
 
@@ -283,7 +295,7 @@ export class ContentView implements WebviewViewProvider {
         </section>`;
       }
 
-      if (type === ContextValue.GROUP && element.children.length === 0) {
+      if (isGroup && element.children.length === 0) {
         text += `
         <section class="children empty" id="${element.id}">
           <span style="margin-left: ${padding + 20}px;">${

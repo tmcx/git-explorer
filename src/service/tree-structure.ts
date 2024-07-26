@@ -108,6 +108,10 @@ class TreeStructure {
       ctt.setContext(ContextValue.GROUP);
       ctt.setChildren(children);
       ctt.setUrls({
+        new: {
+          subgroup: group.group.create_subgroup_url,
+          repo: group.group.create_repo_url,
+        },
         webUrl: group.group.web_url,
         http: '',
         ssh: '',
@@ -137,6 +141,10 @@ export class TreeItem {
   label: string;
   children: TreeItem[] = [];
   urls?: {
+    new?: {
+      subgroup: string;
+      repo: string;
+    };
     webUrl: string;
     http: string;
     ssh: string;
