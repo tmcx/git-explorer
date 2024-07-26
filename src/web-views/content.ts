@@ -251,7 +251,7 @@ export class ContentView implements WebviewViewProvider {
         iconCreateChild += '</div></div>';
       }
 
-      const iconRefresh = isParent
+      const iconRefresh = isParent && !element.loading
         ? `<span class="parent icon refresh" data-id="${element.tokenId}"></span>`
         : '';
 

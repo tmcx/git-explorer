@@ -2,6 +2,10 @@
   font-family: Segoe WPC, Segoe UI, sans-serif;
   user-select: none;
   font-size: 13px;
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 body {
@@ -139,6 +143,7 @@ body {
         font-weight: bold;
         position: relative;
         z-index: 1;
+        opacity: 0.65;
       }
 
       &:hover {
