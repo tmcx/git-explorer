@@ -41,6 +41,7 @@ export class GitlabService {
         parent_id: null,
         web_url: user.web_url,
         name: user.username,
+        description: '',
         id: -99,
       },
     ].map((group) => ({
@@ -56,6 +57,7 @@ export class GitlabService {
       parent_id: project.namespace.id,
       clone_http: project.http_url_to_repo,
       clone_ssh: project.ssh_url_to_repo,
+      description: project.description,
       web_url: project.web_url,
       name: project.name,
       id: project.id,

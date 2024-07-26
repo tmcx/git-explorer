@@ -251,9 +251,10 @@ export class ContentView implements WebviewViewProvider {
         iconCreateChild += '</div></div>';
       }
 
-      const iconRefresh = isParent && !element.loading
-        ? `<span class="parent icon refresh" data-id="${element.tokenId}"></span>`
-        : '';
+      const iconRefresh =
+        isParent && !element.loading
+          ? `<span class="parent icon refresh" data-id="${element.tokenId}"></span>`
+          : '';
 
       const gitCloneIcon = isRepository
         ? `<span
@@ -267,9 +268,17 @@ export class ContentView implements WebviewViewProvider {
       const goToIcon = isProviderLevel
         ? ''
         : `<span class="icon go-to" data-url="${element.urls?.webUrl}" title="${TEXT.GO_TO}"></span>`;
-      let description = validToken ? element.description : TEXT.INVALID_TOKEN;
+      let description = validToken ? '' : TEXT.INVALID_TOKEN;
+      description = `<span class="connection-description">${description}</span>`;
 
-      description = `<span class="description">${description}</span>`;
+      const descriptionSpan = element.description
+        ? `<span class="description" style="left: ${
+            padding + 15
+          }px; max-width: calc(100% - ${(padding + 15) * 2}px);">
+          <b>${element.label}</b>
+          ${element.description}
+          </span>`
+        : '';
 
       let text = `
         <button class="title ${type} ${!!element.loading ? 'disabled' : ''} ${
@@ -281,9 +290,9 @@ export class ContentView implements WebviewViewProvider {
           ${goToIcon}
           ${gitCloneIcon}
           ${iconCreateChild}
-          <span class="name" title="${element.label}">${description}${
-        element.label
-      }</span>
+          <span class="name">${description}${element.label}
+      ${descriptionSpan}
+      </span>
         </button>
       `;
 

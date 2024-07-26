@@ -33,6 +33,7 @@ export class GithubService {
     let groups: IRawGXGitTree['group'][] = (await this.getGroups()).map(
       (group) => ({
         create_repo_url: `${webUrl}/organizations/${group.login}/repositories/new`,
+        description: group.description,
         create_subgroup_url: '',
         web_url: `${webUrl}/${group.login}`,
         name: group.login,
@@ -49,11 +50,13 @@ export class GithubService {
       web_url: `${webUrl}/${myUser.login}?tab=repositories`,
       create_subgroup_url: '',
       create_repo_url: `${webUrl}/organizations/${myUser.login}/repositories/new`,
+      description: '',
     });
     let srcProjects = await this.getProjects();
     
     const projects = srcProjects.map((project) => ({
       parent_web_url: `${webUrl}/${project.owner.login}`,
+      description: project.description,
       clone_http: project.clone_url,
       clone_ssh: project.ssh_url,
       parent_id: project.owner.id,

@@ -91,7 +91,7 @@ class TreeStructure {
       if (group.projects) {
         const pChildren: TreeItem[] = [];
         group.projects.forEach((project) => {
-          const pCTT = new TreeItem(project.name);
+          const pCTT = new TreeItem(project.name, project.description);
           pCTT.setContext(ContextValue.REPOSITORY);
           pCTT.setUrls({
             webUrl: project.web_url,
@@ -104,7 +104,7 @@ class TreeStructure {
         children.push(...pChildren);
       }
 
-      const ctt = new TreeItem(group.group.name);
+      const ctt = new TreeItem(group.group.name, group.group.description);
       ctt.setContext(ContextValue.GROUP);
       ctt.setChildren(children);
       ctt.setUrls({
@@ -179,7 +179,7 @@ export class TreeItem {
     this.urls = urls;
   }
 
-  setContext(ctxValue: ContextValue, expanded: boolean = false) {
+  setContext(ctxValue: ContextValue) {
     this.contextValue = ctxValue;
     this.setIcon();
   }

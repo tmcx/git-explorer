@@ -35,6 +35,7 @@ export interface IRawGXGitTree {
     web_url: string;
     name: string;
     id: number | string;
+    description: string;
   };
   projects: {
     clone_http: string;
@@ -42,6 +43,7 @@ export interface IRawGXGitTree {
     web_url: string;
     name: string;
     id: number | string;
+    description: string;
   }[];
   subgroups: {
     [key: string]: IRawGXGitTree;

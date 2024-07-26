@@ -48,6 +48,7 @@ export class BitbucketService {
         parent_id: repository.project.uuid,
         clone_http: repository.links.clone[0].href,
         clone_ssh: repository.links.clone[1].href,
+        description: repository.description,
         web_url: repository.links.html.href,
         name: repository.name,
         id: repository.uuid,
@@ -70,6 +71,7 @@ export class BitbucketService {
       parent_id: '-99',
       id: group.uuid,
       workspaceName: group.slug,
+      description: group.description,
     }));
 
     for (const workspace of workspaces) {
@@ -78,6 +80,7 @@ export class BitbucketService {
         ...projects.map((project) => ({
           create_repo_url: `${webUrl}/${workspace.slug}/workspace/create/repository?project=${project.key}`,
           create_subgroup_url: `${webUrl}/${workspace.slug}/workspace/create/project`,
+          description: project.description,
           web_url: project.links.html.href,
           name: project.name,
           parent_id: workspace.uuid,
@@ -97,6 +100,7 @@ export class BitbucketService {
               repository.parent_web_url === group.web_url
           )
           .map<IRawGXGitTree['projects'][0]>((repository) => ({
+            description: repository.description,
             clone_http: repository.clone_http,
             clone_ssh: repository.clone_ssh,
             id: repository.id,
