@@ -98,6 +98,12 @@
                 <span title="${name}">${name}</span>
             </span>`;
         listServers.appendChild(span);
+
+        document.querySelectorAll('.password,.new-server,input,#add-server')?.forEach((el) => {
+            el.ariaDisabled = true;
+            el.disabled = true;
+            el.classList.add('disabled');
+        });
     });
 
 
@@ -124,6 +130,13 @@
             selectedText.textContent = el.target.textContent;
             selectedText.setAttribute('aria-default', 'false');
             selected.parentElement.querySelector('.options').classList.remove('show');
+
+            if (selectedText.textContent.toLowerCase() === 'bitbucket') {
+                document.querySelector('#username').classList.add('show');
+            } else {
+                document.querySelector('#username').classList.remove('show');
+            }
+
             debounce(checkToken);
             const infoToken = document.querySelector('.password a');
             infoToken.classList.remove('hidden');

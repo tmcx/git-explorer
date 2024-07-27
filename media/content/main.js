@@ -127,8 +127,8 @@
     }));
 
 
-    document.querySelector('.create-group').addEventListener('click', (event) => { event.stopPropagation(); });
-    document.querySelector('.create-repo').addEventListener('click', (event) => { event.stopPropagation(); });
+    document.querySelector('.create-group')?.addEventListener('click', (event) => { event.stopPropagation(); });
+    document.querySelector('.create-repo')?.addEventListener('click', (event) => { event.stopPropagation(); });
 
 })();
 

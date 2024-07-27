@@ -137,6 +137,7 @@ export class ContentView implements WebviewViewProvider {
     };
 
     this.promises.push(task());
+    await Promise.all(this.promises);
   }
 
   private _getHtmlForHeader(loading = false) {
