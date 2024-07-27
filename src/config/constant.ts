@@ -41,8 +41,9 @@ export const LANG: {
     };
     WVP: {
       CONTENT: {
-        REPOSITORY: any;
-        GROUP: any;
+        REFRESHING: string;
+        REPOSITORY: string;
+        GROUP: string;
         INVALID_TOKEN: string;
         REFRESH: string;
         REFRESH_ALL: string;
@@ -94,6 +95,7 @@ export const LANG: {
         REFRESH: 'Refresh',
         GROUP: 'Folder',
         REPOSITORY: 'Repository',
+        REFRESHING: 'Refreshing...',
       },
       SET_CONFIGURATION: {
         TITLE: 'Connections',
@@ -135,6 +137,7 @@ export const LANG: {
         REFRESH: 'Refrescar',
         GROUP: 'Carpeta',
         REPOSITORY: 'Repositorio',
+        REFRESHING: 'Refrescando...',
       },
       SET_CONFIGURATION: {
         TITLE: 'Conexiones',

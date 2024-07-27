@@ -29,6 +29,7 @@ export enum ECEvent {
   FIRST_LOAD = 'first-load',
   LOADING = 'loading',
   GO_TO = 'go-to',
+  TEXT = 'text',
 }
 
 export type ContentEvent =
@@ -138,6 +139,7 @@ export class ContentView implements WebviewViewProvider {
 
     this.promises.push(task());
     await Promise.all(this.promises);
+    this.sendText();
   }
 
   private _getHtmlForHeader(loading = false) {
@@ -165,7 +167,7 @@ export class ContentView implements WebviewViewProvider {
           .map(
             ({ name }) =>
               `<section class="level">
-                <span class="icon refresh loading"></span>
+                <span class="icon refresh loading" title="${TEXT.REFRESHING}"></span>
                 <span class="icon group"></span>
                 <span>${name}</span>
               </section>
@@ -236,7 +238,7 @@ export class ContentView implements WebviewViewProvider {
         isGroup && validToken ? '<span class="expand">></span>' : '';
 
       if (element.loading) {
-        iconCollapsed = '<span class="icon refresh loading"></span>';
+        iconCollapsed = `<span class="icon refresh loading" title="${TEXT.REFRESHING}"></span>`;
       }
 
       let iconCreateChild = '';
@@ -254,7 +256,7 @@ export class ContentView implements WebviewViewProvider {
 
       const iconRefresh =
         isParent && !element.loading
-          ? `<span class="parent icon refresh" data-id="${element.tokenId}"></span>`
+          ? `<span class="parent icon refresh" data-id="${element.tokenId}" title="${TEXT.REFRESH}"></span>`
           : '';
 
       const gitCloneIcon = isRepository
@@ -386,6 +388,10 @@ export class ContentView implements WebviewViewProvider {
     return `
     <script nonce="${nonce}" src="${scriptUri}"></script>
     `;
+  }
+
+  sendText() {
+    this.webviewView.webview.postMessage({ type: ECEvent.TEXT, data: TEXT });
   }
 }
 

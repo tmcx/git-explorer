@@ -1,6 +1,14 @@
 
+let TEXT = {};
+
 (function () {
     const vscode = acquireVsCodeApi();
+    window.addEventListener('message', event => {
+        const { type, data } = event.data;
+        if (type === 'text') {
+            TEXT = data;
+        }
+    });
 
     const groups = document.querySelectorAll('.title.group:not(.disabled):not(.invalid-token)');
 
@@ -124,6 +132,7 @@
         e.parentElement.nextElementSibling.outerHTML = '';
         e.parentElement.querySelector('.expand').textContent = '';
         e.classList.add('loading');
+        e.setAttribute('title', TEXT.REFRESHING);
     }));
 
 
