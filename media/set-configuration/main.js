@@ -19,7 +19,7 @@
             }
         });
         const valid = gb.status < 400;
-        const invalidToken = document.querySelector('.invalid-token');
+        const invalidToken = document.querySelector('.invalid-server-token');
         if (!valid) {
             invalidToken.classList.add('show');
         } else {
@@ -33,39 +33,49 @@
     const selected = newServer.querySelector('.selected');
     const deleteServer = document.querySelectorAll("#delete-server");
     const addServer = document.querySelector("#add-server");
+    const username = document.querySelector('#username');
     const alias = document.querySelector("#alias");
 
     checkToken = async () => {
         const selectedText = selected.querySelector('.text');
         const serverIsSelected = selectedText.getAttribute('aria-default') !== 'true';
         const provider = selectedText.textContent.toLowerCase();
-        const username = document.querySelector('#username');
 
-        if (provider === 'bitbucket') {
+        const aliasValue = document.querySelector("#alias")?.value.trim() === '';
+        const usernameValue = username?.value.trim() === '';
+        const tokenValue = token?.value.trim() === '';
+        const isBitbucket = provider === 'bitbucket';
+
+        if ((aliasValue || tokenValue) || (isBitbucket && usernameValue)) {
+            return;
+        }
+
+        if (isBitbucket) {
             username.classList.add('show');
         } else {
             username.classList.remove('show');
         }
 
-        const isValidUsername = provider === 'bitbucket' ? !username.textContent.trim() : true;
+        const isValidUsername = isBitbucket ? !username.textContent.trim() : true;
 
         let isValidToken = false;
         if (!!token.value.trim()) {
             let tokenValue = token.value;
-            if (provider === 'bitbucket') {
+            if (isBitbucket) {
                 tokenValue = btoa(`${username.value}:${token.value}`);
             }
             isValidToken = await validateToken(tokenValue, provider);
         } else {
-            const invalidToken = document.querySelector('.invalid-token');
+            const invalidToken = document.querySelector('.invalid-server-token');
             invalidToken.classList.remove('show');
         }
         addServer.disabled = !isValidToken || !token.value.trim() || !alias.value.trim() || !serverIsSelected || !isValidUsername;
         return !addServer.disabled;
     };
 
-    alias?.addEventListener("keyup", debounce(checkToken));
-    token?.addEventListener("keyup", debounce(checkToken));
+    username?.addEventListener("keyup", checkToken);
+    alias?.addEventListener("keyup", checkToken);
+    token?.addEventListener("keyup", checkToken);
 
     const listServers = document.querySelector('#list-servers');
 
@@ -137,7 +147,7 @@
                 document.querySelector('#username').classList.remove('show');
             }
 
-            debounce(checkToken);
+            checkToken();
             const infoToken = document.querySelector('.password a');
             infoToken.classList.remove('hidden');
             const getTokenUrl = urls[el.target.textContent.toLowerCase()]?.getTokenUrl;
@@ -145,13 +155,3 @@
         });
     });
 })();
-
-
-function debounce(func, wait = 500) {
-    let timeout;
-    return function (...args) {
-        const context = this;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(context, args), wait);
-    };
-}

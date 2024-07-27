@@ -110,7 +110,7 @@ export class SetConfigurationView implements WebviewViewProvider {
         <input type="password" required placeholder="${TEXT.TOKEN}" id="token">
         <a class="hidden" href="" title="${TEXT.GET_TOKEN_URL_TITLE}">i</a>
       </div>
-      <span class="invalid-token">${TEXT.INVALID_TOKEN}</span>
+      <span class="invalid-server-token">${TEXT.INVALID_TOKEN}</span>
       <button id="add-server" disabled>${TEXT.ADD}</button>
     `;
   }

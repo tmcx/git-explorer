@@ -124,7 +124,7 @@ h3 {
   flex-direction: column;
 }
 
-.invalid-token:not(.description) {
+.invalid-server-token:not(.description) {
   display: none;
   color: #fff;
   text-transform: capitalize;
