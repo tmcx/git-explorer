@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.6.1
+- Folder and repository description tooltip
+- Create repository and folders
+- Show bitbucket projects structure fixed
+
 ### 1.5.1
 - Load content on vscode start
 - Refresh by connection
